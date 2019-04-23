@@ -1,0 +1,21 @@
+.matrix {
+  overflow: auto;
+}
+
+.matrix line {
+  stroke: #666;
+}
+
+.matrix rect {
+  opacity: 0.5;
+}
+
+
+
+.matrix .hover text {
+  font-weight: bold;
+}
+
+.matrix .hover rect {
+  opacity: 1;
+}

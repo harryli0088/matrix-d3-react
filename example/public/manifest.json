@@ -1,6 +1,6 @@
 {
-  "short_name": "d3-react-matrix",
-  "name": "d3-react-matrix",
+  "short_name": "matrix-d3-react",
+  "name": "matrix-d3-react",
   "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#000000",

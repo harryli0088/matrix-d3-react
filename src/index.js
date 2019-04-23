@@ -146,7 +146,7 @@ class Row extends Component {
         <line x2={this.props.chartWidth}></line>
         <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
 
-        <text x={-1*TEXT_OFFSET} y={(this.props.rectHeight+8)/2} textAnchor="end">{this.props.data.title} ({this.props.data.count})</text>
+        <text x={-1*TEXT_OFFSET} y={(this.props.rectHeight+8)/2} textAnchor="end">{this.props.data.title} {this.props.data.count!=undefined ? "("+this.props.data.count+")" : ""}</text>
       </g>
     );
   }

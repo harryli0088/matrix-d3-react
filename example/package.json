@@ -1,6 +1,6 @@
 {
-  "name": "d3-react-matrix-example",
-  "homepage": "https://harryli0088.github.io/d3-react-matrix",
+  "name": "matrix-d3-react-example",
+  "homepage": "https://harryli0088.github.io/matrix-d3-react",
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
@@ -9,7 +9,7 @@
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-scripts": "^1.1.4",
-    "d3-react-matrix": "file:.."
+    "matrix-d3-react": "file:.."
   },
   "scripts": {
     "start": "react-scripts start",

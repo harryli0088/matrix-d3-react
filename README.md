@@ -1,16 +1,18 @@
 # matrix-d3-react
+> responsive matrix viz using d3 and react
 
+![Demo](/example/matrix-d3-react.gif)
 
-## Development
+## Develop
 ```bash
+npm install
 npm start #live reload when you make a change
 
 #open another terminal / tab
 cd example
+npm install
 npm start #live reload when you make a change
 ```
-
-> responsive matrix viz using d3 and react
 
 
 ## Install
@@ -26,11 +28,13 @@ import React, { Component } from 'react'
 
 import Matrix from 'matrix-d3-react'
 
+//count is optional
 var data = [
   {"title":"Row 1","values":[1,3,3]},
   {"title":"Row 2","count": 2,"values":[1,3,3]},
   {"title":"Row 3","count": 3,"values":[1,3,3]}
 ];
+
 var columns = ["column A", "column B", "column C"];
 
 var colorScale = {"0":"#eee","1":"orange","2":"#3498DB","3":"#2ECC71"};

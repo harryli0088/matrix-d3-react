@@ -2,7 +2,7 @@
 
 
 ## Development
-```
+```bash
 npm start #live reload when you make a change
 
 #open another terminal / tab
@@ -10,14 +10,13 @@ cd example
 npm start #live reload when you make a change
 ```
 
-> matrix viz using d3 and react
+> responsive matrix viz using d3 and react
 
-[![NPM](https://img.shields.io/npm/v/matrix-d3-react.svg)](https://www.npmjs.com/package/matrix-d3-react) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save matrix-d3-react
+npm install --save harryli0088/matrix-d3-react
 ```
 
 ## Usage
@@ -29,7 +28,7 @@ import Matrix from 'matrix-d3-react'
 
 var data = [
   {"title":"Row 1","values":[1,3,3]},
-  {"title":"Row asdad2","count": 2,"values":[1,3,3]},
+  {"title":"Row 2","count": 2,"values":[1,3,3]},
   {"title":"Row 3","count": 3,"values":[1,3,3]}
 ];
 var columns = ["column A", "column B", "column C"];

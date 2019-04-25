@@ -29,7 +29,7 @@ export default class Matrix extends Component {
     };
 
     this.resize = this.resize.bind(this);
-    this.mouseover = this.mouseover.bind(this);
+    this.mouseoverColumn = this.mouseoverColumn.bind(this);
     this.mouseout = this.mouseout.bind(this);
 
     this.matrix = React.createRef();
@@ -65,9 +65,8 @@ export default class Matrix extends Component {
     }
   }
 
-  mouseover(rowIndex, colIndex) {
+  mouseoverColumn(colIndex) {
     this.setState({
-      mouseoverRowIndex: rowIndex,
       mouseoverColIndex: colIndex
     });
   }
@@ -101,7 +100,7 @@ export default class Matrix extends Component {
                 xScale={x}
                 rectWidth={rectWidth}
 
-                mouseover={this.mouseover}
+                mouseoverColumn={this.mouseoverColumn}
                 mouseoverColIndex={this.state.mouseoverColIndex}
               />
             )}
@@ -122,9 +121,7 @@ export default class Matrix extends Component {
                   chartWidth={effectiveWidth}
                   colorScale={this.props.colorScale}
 
-                  mouseover={this.mouseover}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
-                  mouseoverColIndex={this.state.mouseoverColIndex}
                 />
               )}
 
@@ -135,6 +132,9 @@ export default class Matrix extends Component {
                   xScale={x}
                   rectWidth={rectWidth}
                   chartHeight={this.state.height}
+
+                  mouseoverColumn={this.mouseoverColumn}
+                  mouseoverColIndex={this.state.mouseoverColIndex}
                 />
               )}
             </g>
@@ -162,18 +162,16 @@ class Row extends Component {
       <g
         className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
         transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
-
-        onMouseOut={() => this.setState({hover: false})}>
+        >
         {this.props.data.values.map((d, i) =>
           <rect
             key={i}
-            className={(i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
-            fill={this.props.colorScale[d]} x={this.props.xScale(i)}
+            className={"cell"}
+            fill={this.props.colorScale[d]}
+            x={this.props.xScale(i)}
             y={0}
             width={this.props.rectWidth}
             height={this.props.rectHeight}
-
-            onMouseOver={() => this.props.mouseover(this.props.index, i)}
             >
           </rect>
         )}
@@ -185,8 +183,6 @@ class Row extends Component {
           x={-1*TEXT_OFFSET}
           y={(this.props.rectHeight+8)/2}
           textAnchor="end"
-
-          onMouseOver={() => this.props.mouseover(this.props.index, -1)}
         >
           {this.props.data.title} {this.props.data.count!=undefined ? "("+this.props.data.count+")" : ""}
         </text>
@@ -198,9 +194,14 @@ class Row extends Component {
 class Col extends Component {
   render() {
     return (
-      <g transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}>
+      <g
+        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""}
+        transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
+        onMouseOver={(e) => this.props.mouseoverColumn(this.props.index)}
+      >
         <line x1={-1*this.props.chartHeight}></line>
         <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth}></line>
+        <rect className="curtain" x={-1*this.props.chartHeight} y={0} width={this.props.chartHeight} height={this.props.rectWidth} fill="pink"></rect>
       </g>
     );
   }
@@ -209,7 +210,11 @@ class Col extends Component {
 class Heading extends Component {
   render() {
     return (
-      <g className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"} onMouseOver={() => this.props.mouseover(-1, this.props.index)}>
+      <g
+        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""}
+        transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
+        onMouseOver={(e) => this.props.mouseoverColumn(this.props.index)}
+      >
         <text x={TEXT_OFFSET} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data}</text>
       </g>
     );

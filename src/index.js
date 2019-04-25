@@ -90,7 +90,7 @@ export default class Matrix extends Component {
     const rectHeight = y.bandwidth();
 
     return (
-      <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
+      <div className="matrix" ref={this.matrix} onMouseMove={e => console.log(e.clientY)} onMouseLeave={this.mouseout}>
         <svg width={this.state.width} height={this.state.verticalTextSize}>
           <g transform={`translate(${this.state.horizontalTextSize}, ${this.state.verticalTextSize})`}>
             {this.props.columns.map((d, i) =>
@@ -201,7 +201,7 @@ class Col extends Component {
       >
         <line x1={-1*this.props.chartHeight}></line>
         <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth}></line>
-        <rect className="curtain" x={-1*this.props.chartHeight} y={0} width={this.props.chartHeight} height={this.props.rectWidth} fill="pink"></rect>
+        <rect className="curtain" x={-1*this.props.chartHeight} y={0} width={this.props.chartHeight} height={this.props.rectWidth} fill="gray"></rect>
       </g>
     );
   }

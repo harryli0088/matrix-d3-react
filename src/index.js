@@ -90,6 +90,18 @@ export default class Matrix extends Component {
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();
 
+    //convert row arrays into column arrays
+    let colData = [];
+    for(let i=0; i<this.props.data[0].values.length; ++i) { //for each column
+      let oneColumn = [];
+      for(let j=0; j<this.props.data.length; ++j) { //for each row
+        oneColumn.push(this.props.data[j].values[i]);
+      }
+      colData.push(oneColumn);
+    }
+
+    console.log("colData",colData);
+
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
         <svg width={this.state.width} height={this.state.verticalTextSize}>
@@ -111,6 +123,23 @@ export default class Matrix extends Component {
         <div style={this.props.contentMaxHeight ? {"maxHeight":this.props.contentMaxHeight,"overflow":"auto"} : {}}>
           <svg width={this.state.width} height={this.state.height} >
             <g transform={`translate(${this.state.horizontalTextSize})`}>
+              {colData.map((d, i) =>
+                <Col key={i}
+                  index={i}
+                  data={d}
+                  xScale={x}
+                  yScale={y}
+                  rectWidth={rectWidth}
+                  rectHeight={rectHeight}
+                  chartWidth={effectiveWidth}
+                  colorScale={this.props.colorScale}
+
+                  mouseoverColIndex={this.state.mouseoverColIndex}
+                />
+              )}
+
+
+
               {this.props.data.map((d, i) =>
                 <Row key={i}
                   index={i}
@@ -124,17 +153,26 @@ export default class Matrix extends Component {
 
                   mouseover={this.mouseover}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
-                  mouseoverColIndex={this.state.mouseoverColIndex}
                 />
               )}
 
               {this.props.columns.map((d, i) =>
-                <Col key={i}
+                <ColLine key={i}
                   index={i}
                   data={d}
                   xScale={x}
                   rectWidth={rectWidth}
                   chartHeight={this.state.height}
+                />
+              )}
+
+              {this.props.data.map((d, i) =>
+                <RowLine key={i}
+                  index={i}
+                  data={d}
+                  yScale={y}
+                  rectHeight={rectHeight}
+                  chartWidth={effectiveWidth}
                 />
               )}
             </g>
@@ -147,14 +185,10 @@ export default class Matrix extends Component {
   }
 }
 
-
+//row rectangles and text
 class Row extends Component {
   constructor(props) {
     super(props);
-
-    // this.state = {
-    //   hover: false,
-    // };
   }
 
   render() {
@@ -162,24 +196,21 @@ class Row extends Component {
       <g
         className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
         transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
-
-        onMouseOut={() => this.setState({hover: false})}>
+      >
         {this.props.data.values.map((d, i) =>
           <rect
             key={i}
-            className={(i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
-            fill={this.props.colorScale[d]} x={this.props.xScale(i)}
+            className="cell"
+            fill={this.props.colorScale[d]}
+            x={this.props.xScale(i)}
             y={0}
             width={this.props.rectWidth}
             height={this.props.rectHeight}
 
             onMouseOver={() => this.props.mouseover(this.props.index, i)}
-            >
+          >
           </rect>
         )}
-
-        <line x2={this.props.chartWidth}></line>
-        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
 
         <text
           x={-1*TEXT_OFFSET}
@@ -195,7 +226,52 @@ class Row extends Component {
   }
 }
 
+
+//column rectangles hidden under the rows
 class Col extends Component {
+  constructor(props) {
+    console.log(props.data);
+    super(props);
+  }
+
+  render() {
+    return (
+      <g
+        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""}
+        transform={"translate(" + this.props.xScale(this.props.index) + ",0)"}
+      >
+        {this.props.data.map((d, i) =>
+          <rect
+            key={i}
+            className="cell"
+            fill={this.props.colorScale[d]}
+            x={0}
+            y={this.props.yScale(i)}
+            width={this.props.rectWidth}
+            height={this.props.rectHeight}
+          >
+          </rect>
+        )}
+      </g>
+    );
+  }
+}
+
+
+//column heading text
+class Heading extends Component {
+  render() {
+    return (
+      <g className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"} onMouseOver={() => this.props.mouseover(-1, this.props.index)}>
+        <text x={TEXT_OFFSET} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data}</text>
+      </g>
+    );
+  }
+}
+
+
+//column grid line
+class ColLine extends Component {
   render() {
     return (
       <g transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}>
@@ -206,11 +282,13 @@ class Col extends Component {
   }
 }
 
-class Heading extends Component {
+//row grid line
+class RowLine extends Component {
   render() {
     return (
-      <g className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"} onMouseOver={() => this.props.mouseover(-1, this.props.index)}>
-        <text x={TEXT_OFFSET} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data}</text>
+      <g transform={"translate(0," + this.props.yScale(this.props.index) + ")"}>
+        <line x2={this.props.chartWidth}></line>
+        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
       </g>
     );
   }

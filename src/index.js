@@ -38,7 +38,6 @@ export default class Matrix extends Component {
 
   componentDidMount() {
     let canvas = this.canvas.current;
-    console.log(this.canvas);
     let context = canvas.getContext("2d");
 
     //get text label lengths
@@ -100,7 +99,6 @@ export default class Matrix extends Component {
       colData.push(oneColumn);
     }
 
-    console.log("colData",colData);
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
@@ -309,3 +307,14 @@ function getTextSize(context, text, font) {
 
   return longestLength;
 }
+
+
+
+//one way to do highlighting is to hover over a rectangle, get its x and y coordinates (row and col indecies) and have each individual rectangle decide whether or not it should be highlighted
+//this approach leads to an m x n number of comparisons (where m is the number of rows and n is the number of columns)
+//when the grid gets really big, this lags a bit
+//the different approach here is to have rows of rectangles like we did before, but this time also have columns of rectangles hidden under the rows
+//each rectangle has an opacity less than 1 so the columns show through even though the rows are stacked on top of them
+//when you hover over a rectangle in a row, get it's row and col indecies as normal
+//but now instead of having each individual rectangle determine if it should be highlighted, have each row and column determine it it should be highlighted
+//this in theory leads to only m + n comparisons, vs m x n from before, leading to better performance

@@ -12,10 +12,10 @@
 
 
 
-.matrix .hover text {
+.matrix text.hover, .matrix .hover text  {
   font-weight: bold;
 }
 
-.matrix .hover rect {
+.matrix rect.hover, .matrix .hover rect  {
   opacity: 1;
 }

@@ -192,7 +192,7 @@ class Row extends Component {
   render() {
     return (
       <g
-        className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
+        className={(this.props.index===this.props.mouseoverRowIndex ? "hover " : "") + "rectGroup"}
         transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
       >
         {this.props.data.values.map((d, i) =>
@@ -235,7 +235,7 @@ class Col extends Component {
   render() {
     return (
       <g
-        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""}
+        className={(this.props.index===this.props.mouseoverColIndex ? "hover " : "") + "rectGroup"}
         transform={"translate(" + this.props.xScale(this.props.index) + ",0)"}
       >
         {this.props.data.map((d, i) =>

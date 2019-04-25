@@ -6,7 +6,7 @@
   stroke: #666;
 }
 
-.matrix rect {
+.matrix .rectGroup {
   opacity: 0.4;
 }
 
@@ -15,6 +15,6 @@
   font-weight: bold;
 }
 
-.matrix .hover rect  {
+.matrix .hover.rectGroup  {
   opacity: 1;
 }

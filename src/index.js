@@ -235,5 +235,5 @@ function getTextSize(context, text, font) {
     }
   }
 
-  return longestLength;
+  return longestLength + TEXT_OFFSET;
 }

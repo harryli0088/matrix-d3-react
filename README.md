@@ -58,7 +58,7 @@ let columns = [
 //matrix data, 2d array where each element is an object with fields:
 //r (row): the index of the corresponding element in rows
 //c (column): the index of the corresponding element in columns
-//z (count): the value of the count for this element, an input to colurFunction
+//z (count): the value of the count for this element, an input to colorFunction
 let matrix = [
   [ {"r":0,"c":0,"z":0}, {"r":0,"c":1,"z":0}, {"r":0,"c":2,"z":9} ],
   [ {"r":1,"c":0,"z":6}, {"r":1,"c":1,"z":7}, {"r":1,"c":2,"z":4} ],
@@ -85,7 +85,7 @@ let orders = {
   }
 }
 
-let orderByOptions = ["name","count"]; //array of options that the user can sore the array by
+let orderByOptions = ["name","count"]; //array of options that the user can sort the array by
 
 
 export default class App extends Component {

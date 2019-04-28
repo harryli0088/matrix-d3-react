@@ -25,8 +25,16 @@ export default class Matrix extends Component {
       width: 500,
       minWidth: 500,
       height: 500,
-      horizontalTextSize: 100,
-      verticalTextSize: 100,
+      horizontalTextSize: 0,
+      verticalTextSize: 0,
+      effectiveWidth: 500,
+      x: function() {},
+      y: function() {},
+      rectWidth: MIN_RECT_SIZE,
+      rectHeight: MIN_RECT_SIZE,
+      gridColor: "gray",
+
+
       mouseoverRowIndex: -1,
       mouseoverColIndex: -1,
     };
@@ -36,24 +44,10 @@ export default class Matrix extends Component {
     this.mouseout = this.mouseout.bind(this);
 
     this.matrix = React.createRef();
-    this.canvas = React.createRef();
   }
 
   componentDidMount() {
-    let canvas = this.canvas.current;
-    console.log(this.canvas);
-    let context = canvas.getContext("2d");
-
-    //get text label lengths
-    const horizontalTextSize = getTextSize(context, this.props.rows, "16pt arial");
-    const verticalTextSize = getTextSize(context, this.props.columns, "16pt arial");
-
-    this.setState({
-      horizontalTextSize: horizontalTextSize,
-      verticalTextSize: verticalTextSize,
-      minWidth: horizontalTextSize + this.props.columns.length*MIN_RECT_SIZE + TEXT_OFFSET, //text label length, plus number of rectable widths, plus text offset
-      height: this.props.data.length*MIN_RECT_SIZE + TEXT_OFFSET,
-    });
+    this.setState( recalculate(this.props,this.state) );
 
     window.addEventListener('resize', this.resize); //add resize listener for responsiveness
 
@@ -61,10 +55,10 @@ export default class Matrix extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    return {
-      height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET
-    };
+    return recalculate(props,state);
   }
+
+
 
   resize() {
     if(this.matrix.current) {
@@ -90,17 +84,6 @@ export default class Matrix extends Component {
 
 
   render() {
-    //effective width of the matric minus horitzontal text and scrollbar
-    const effectiveWidth = this.state.width - this.state.horizontalTextSize - (this.props.contentMaxHeight?17:0);
-
-    //in svg, y is rows and x is columns
-    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.columns[this.props.orderBy]);
-    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.row[this.props.orderBy]);
-
-    const rectWidth = x.bandwidth();
-    const rectHeight = y.bandwidth();
-
-    const gridColor = this.props.gridColor || "gray";
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
@@ -110,8 +93,8 @@ export default class Matrix extends Component {
               <ColHeading key={i}
                 index={i}
                 data={d}
-                xScale={x}
-                rectWidth={rectWidth}
+                xScale={this.state.x}
+                rectWidth={this.state.rectWidth}
 
                 mouseover={this.mouseover}
                 mouseoverColIndex={this.state.mouseoverColIndex}
@@ -128,13 +111,13 @@ export default class Matrix extends Component {
                   index={i}
                   heading={this.props.rows[i]}
                   data={d}
-                  xScale={x}
-                  yScale={y}
-                  rectWidth={rectWidth}
-                  rectHeight={rectHeight}
-                  chartWidth={effectiveWidth}
+                  xScale={this.state.x}
+                  yScale={this.state.y}
+                  rectWidth={this.state.rectWidth}
+                  rectHeight={this.state.rectHeight}
+                  chartWidth={this.state.effectiveWidth}
                   colorFunction={this.props.colorFunction}
-                  gridColor={gridColor}
+                  gridColor={this.state.gridColor}
 
                   mouseover={this.mouseover}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
@@ -146,16 +129,14 @@ export default class Matrix extends Component {
                 <ColGrid key={i}
                   index={i}
                   data={d}
-                  xScale={x}
-                  rectWidth={rectWidth}
+                  xScale={this.state.x}
+                  rectWidth={this.state.rectWidth}
                   chartHeight={this.state.height}
-                  gridColor={gridColor}
+                  gridColor={this.state.gridColor}
                 />
               )}
             </g>
           </svg>
-
-        <canvas ref={this.canvas} width={0} height={0} />
       </div>
     );
   }
@@ -165,14 +146,9 @@ export default class Matrix extends Component {
 class Row extends Component {
   constructor(props) {
     super(props);
-
-    // this.state = {
-    //   hover: false,
-    // };
   }
 
   render() {
-    // console.log("d",this.props.data);
     return (
       <React.Fragment>
         {this.props.data.map((d, i) =>
@@ -226,7 +202,6 @@ class ColGrid extends Component {
 
 class ColHeading extends Component {
   render() {
-    console.log("d",this.props.index);
     return (
       <g className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"} onMouseOver={() => this.props.mouseover(-1, this.props.index)}>
         <text x={TEXT_OFFSET} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data.name}</text>
@@ -236,10 +211,8 @@ class ColHeading extends Component {
 }
 
 
-
-function getTextSize(context, text, font) {
-  context.font = font;
-
+//given a canvas context and some text, return the longest length in pixels
+function getTextSize(context, text) {
   let longestLength = 0;
   for(let i=0; i<text.length; ++i) {
     const length = context.measureText(text[i].name + "("+text[i].count+")").width;
@@ -249,4 +222,41 @@ function getTextSize(context, text, font) {
   }
 
   return longestLength;
+}
+
+
+
+//given props and state, return an object to update the next state
+function recalculate(props,state) {
+  let context = document.createElement('canvas').getContext("2d");
+  context.font = "16pt arial";
+
+  //get text label lengths
+  const horizontalTextSize = getTextSize(context, props.rows);
+  const verticalTextSize = getTextSize(context, props.columns);
+
+  //effective width of the matric minus horitzontal text and scrollbar
+  const effectiveWidth = state.width - state.horizontalTextSize - (props.contentMaxHeight?17:0);
+
+  //in svg, y is rows and x is columns
+  const x = d3.scaleBand().range([0, effectiveWidth]).domain(props.orders.columns[props.orderBy]);
+  const y = d3.scaleBand().range([0, state.height]).domain(props.orders.row[props.orderBy]);
+
+  const rectWidth = x.bandwidth();
+  const rectHeight = y.bandwidth();
+
+  const gridColor = props.gridColor || "gray";
+
+  return {
+    horizontalTextSize: horizontalTextSize,
+    verticalTextSize: verticalTextSize,
+    minWidth: horizontalTextSize + props.columns.length*MIN_RECT_SIZE + TEXT_OFFSET, //text label length, plus number of rectable widths, plus text offset
+    height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET,
+    effectiveWidth: effectiveWidth,
+    x: x,
+    y: y,
+    rectWidth: rectWidth,
+    rectHeight: rectHeight,
+    gridColor: gridColor
+  };
 }

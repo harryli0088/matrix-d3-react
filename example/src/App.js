@@ -40,7 +40,7 @@ export default class App extends Component {
   render () {
     return (
       <div>
-        <Matrix data={matrix} rows={companies} columns={politicians} colorFunction={colorFunction} orders={orders} contentMaxHeight={1000}/>
+        <Matrix data={matrix} rows={companies} columns={politicians} colorFunction={colorFunction} orders={orders} contentMaxHeight={1000} gridColor="white"/>
       </div>
     )
   }

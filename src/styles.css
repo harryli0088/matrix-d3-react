@@ -2,10 +2,6 @@
   overflow: auto;
 }
 
-.matrix line {
-  stroke: #666;
-}
-
 .matrix rect {
   opacity: 0.9;
 }

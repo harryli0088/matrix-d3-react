@@ -14,7 +14,8 @@ export default class Matrix extends Component {
     columns: PropTypes.array.isRequired, //[strings of the vertical column texts]
     orders: PropTypes.object.isRequired,
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
-    contentMaxHeight: PropTypes.number //optional number of the maximum number of pixels that the content takes up before scrolling
+    contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
+    gridColor: PropTypes.string //optional string for the color of the grid lines
   }
 
   constructor(props) {
@@ -92,11 +93,13 @@ export default class Matrix extends Component {
     //effective width of the matric minus horitzontal text and scrollbar
     const effectiveWidth = this.state.width - this.state.horizontalTextSize - (this.props.contentMaxHeight?17:0);
 
-    let x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.x.name);
-    let y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.y.name);
+    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.x.name);
+    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.y.name);
 
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();
+
+    const gridColor = this.props.gridColor || "gray";
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
@@ -130,6 +133,7 @@ export default class Matrix extends Component {
                   rectHeight={rectHeight}
                   chartWidth={effectiveWidth}
                   colorFunction={this.props.colorFunction}
+                  gridColor={gridColor}
 
                   mouseover={this.mouseover}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
@@ -144,6 +148,7 @@ export default class Matrix extends Component {
                   xScale={x}
                   rectWidth={rectWidth}
                   chartHeight={this.state.height}
+                  gridColor={gridColor}
                 />
               )}
             </g>
@@ -189,8 +194,8 @@ class Row extends Component {
           transform={"translate(0," + this.props.yScale(this.props.index) + ")"}>
 
 
-          <line x2={this.props.chartWidth}></line>
-          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
+          <line x2={this.props.chartWidth} stroke={this.props.gridColor}></line>
+          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridColor}></line>
 
           <text
             x={-1*TEXT_OFFSET}
@@ -211,8 +216,8 @@ class ColGrid extends Component {
   render() {
     return (
       <g transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}>
-        <line x1={-1*this.props.chartHeight}></line>
-        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth}></line>
+        <line x1={-1*this.props.chartHeight} stroke={this.props.gridColor}></line>
+        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth} stroke={this.props.gridColor}></line>
       </g>
     );
   }

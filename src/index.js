@@ -93,8 +93,8 @@ export default class Matrix extends Component {
     //effective width of the matric minus horitzontal text and scrollbar
     const effectiveWidth = this.state.width - this.state.horizontalTextSize - (this.props.contentMaxHeight?17:0);
 
-    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.x.name);
-    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.y.name);
+    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.x[this.props.orderBy]);
+    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.y[this.props.orderBy]);
 
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();

@@ -19,6 +19,7 @@ export default class Matrix extends Component {
     super(props);
 
     this.state = {
+      colData: [],
       width: 500,
       minWidth: 500,
       height: 500,
@@ -57,8 +58,19 @@ export default class Matrix extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
+    //convert row arrays into column arrays
+    let colData = [];
+    for(let i=0; i<props.data[0].values.length; ++i) { //for each column
+      let oneColumn = [];
+      for(let j=0; j<props.data.length; ++j) { //for each row
+        oneColumn.push(props.data[j].values[i]);
+      }
+      colData.push(oneColumn);
+    }
+
     return {
-      height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET
+      height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET,
+      colData: colData
     };
   }
 
@@ -95,15 +107,7 @@ export default class Matrix extends Component {
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();
 
-    //convert row arrays into column arrays
-    let colData = [];
-    for(let i=0; i<this.props.data[0].values.length; ++i) { //for each column
-      let oneColumn = [];
-      for(let j=0; j<this.props.data.length; ++j) { //for each row
-        oneColumn.push(this.props.data[j].values[i]);
-      }
-      colData.push(oneColumn);
-    }
+
 
 
     return (
@@ -127,16 +131,16 @@ export default class Matrix extends Component {
         <div style={this.props.contentMaxHeight ? {"maxHeight":this.props.contentMaxHeight,"overflow":"auto"} : {}}>
           <svg width={this.state.width} height={this.state.height} >
             <g transform={`translate(${this.state.horizontalTextSize})`}>
-              {colData.map((d, i) =>
+              {this.state.colData.map((d, i) =>
                 <Col key={i}
                   index={i}
                   data={d}
                   xScale={x}
-                  yScale={y}
+                  yScale={y}x
                   rectWidth={rectWidth}
                   rectHeight={rectHeight}
                   chartWidth={effectiveWidth}
-                  colorScale={this.props.colorScale}
+                  colorFunction={this.props.colorFunction}
 
                   mouseoverColIndex={this.state.mouseoverColIndex}
                 />
@@ -247,7 +251,7 @@ class Col extends Component {
           <rect
             key={i}
             className="cell"
-            fill={this.props.colorScale[d]}
+            fill={this.props.colorFunction(d)}
             x={0}
             y={this.props.yScale(i)}
             width={this.props.rectWidth}

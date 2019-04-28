@@ -11,7 +11,7 @@ export default class Matrix extends Component {
   static propTypes = {
     data: PropTypes.array.isRequired, //[{ title: string for horizontal row text, values: [array of values that each correspond to a color] }]
     columns: PropTypes.array.isRequired, //[strings of the vertical column texts]
-    colorScale: PropTypes.object.isRequired, //{value1: color, value2: color, value3: color, ...}
+    colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
     contentMaxHeight: PropTypes.number //optional number of the maximum number of pixels that the content takes up before scrolling
   }
 
@@ -55,6 +55,12 @@ export default class Matrix extends Component {
     window.addEventListener('resize', this.resize); //add resize listener for responsiveness
 
     this.resize(); //initial resize
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET
+    };
   }
 
   resize() {
@@ -120,7 +126,7 @@ export default class Matrix extends Component {
                   rectWidth={rectWidth}
                   rectHeight={rectHeight}
                   chartWidth={effectiveWidth}
-                  colorScale={this.props.colorScale}
+                  colorFunction={this.props.colorFunction}
 
                   mouseover={this.mouseover}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
@@ -168,7 +174,7 @@ class Row extends Component {
           <rect
             key={i}
             className={(i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
-            fill={this.props.colorScale[d]} x={this.props.xScale(i)}
+            fill={this.props.colorFunction(d)} x={this.props.xScale(i)}
             y={0}
             width={this.props.rectWidth}
             height={this.props.rectHeight}

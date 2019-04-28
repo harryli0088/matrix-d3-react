@@ -168,15 +168,11 @@ class Row extends Component {
   render() {
     // console.log("d",this.props.data);
     return (
-      <g
-        className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
-        transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
-
-        onMouseOut={() => this.setState({hover: false})}>
+      <React.Fragment>
         {this.props.data.map((d, i) =>
           <rect
             key={i}
-            className={(i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
+            className={(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
             fill={this.props.colorFunction(d.z)}
             x={this.props.xScale(d.x)}
             y={this.props.yScale(d.y)}
@@ -188,19 +184,25 @@ class Row extends Component {
           </rect>
         )}
 
-        <line x2={this.props.chartWidth}></line>
-        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
+        <g
+          className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
+          transform={"translate(0," + this.props.yScale(this.props.index) + ")"}>
 
-        <text
-          x={-1*TEXT_OFFSET}
-          y={(this.props.rectHeight+8)/2}
-          textAnchor="end"
 
-          onMouseOver={() => this.props.mouseover(this.props.index, -1)}
-        >
-          {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
-        </text>
-      </g>
+          <line x2={this.props.chartWidth}></line>
+          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight}></line>
+
+          <text
+            x={-1*TEXT_OFFSET}
+            y={(this.props.rectHeight+8)/2}
+            textAnchor="end"
+
+            onMouseOver={() => this.props.mouseover(this.props.index, -1)}
+          >
+            {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
+          </text>
+        </g>
+      </React.Fragment>
     );
   }
 }

@@ -2,6 +2,7 @@
 > responsive, order-able matrix viz using d3 and react
 
 ![Demo](/example/matrix-d3-react.gif)
+
 GIF created using [https://ezgif.com/video-to-gif](https://ezgif.com/video-to-gif)
 
 ## Develop

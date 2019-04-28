@@ -45,8 +45,8 @@ export default class Matrix extends Component {
     let context = canvas.getContext("2d");
 
     //get text label lengths
-    const horizontalTextSize = getTextSize(context, this.props.rows.map(d => d.name), "16pt arial");
-    const verticalTextSize = getTextSize(context, this.props.columns.map(d => d.name), "16pt arial");
+    const horizontalTextSize = getTextSize(context, this.props.rows, "16pt arial");
+    const verticalTextSize = getTextSize(context, this.props.columns, "16pt arial");
 
     this.setState({
       horizontalTextSize: horizontalTextSize,
@@ -93,8 +93,8 @@ export default class Matrix extends Component {
     //effective width of the matric minus horitzontal text and scrollbar
     const effectiveWidth = this.state.width - this.state.horizontalTextSize - (this.props.contentMaxHeight?17:0);
 
-    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.x[this.props.orderBy]);
-    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.y[this.props.orderBy]);
+    const x = d3.scaleBand().range([0, effectiveWidth]).domain(this.props.orders.col[this.props.orderBy]);
+    const y = d3.scaleBand().range([0, this.state.height]).domain(this.props.orders.row[this.props.orderBy]);
 
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();
@@ -179,8 +179,8 @@ class Row extends Component {
             key={i}
             className={(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
             fill={this.props.colorFunction(d.z)}
-            x={this.props.xScale(d.x)}
-            y={this.props.yScale(d.y)}
+            x={this.props.xScale(d.c)}
+            y={this.props.yScale(d.r)}
             width={this.props.rectWidth}
             height={this.props.rectHeight}
 
@@ -241,7 +241,7 @@ function getTextSize(context, text, font) {
 
   let longestLength = 0;
   for(let i=0; i<text.length; ++i) {
-    const length = context.measureText(text[i]).width;
+    const length = context.measureText(text[i].name + "("+text[i].count+")").width;
     if(length > longestLength) {
       longestLength = length;
     }

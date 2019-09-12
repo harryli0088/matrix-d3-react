@@ -103,7 +103,7 @@ export default class Matrix extends Component {
           </g>
         </svg>
 
-        <div style={this.props.contentMaxHeight<this.state.height ? {"maxHeight":this.props.contentMaxHeight,"overflow-y":"auto","width":this.state.width+17} : {}}>
+        <div style={this.props.contentMaxHeight<this.state.height ? {"maxHeight":this.props.contentMaxHeight,"overflowY":"auto","width":this.state.width+17} : {}}>
           <svg width={this.state.width} height={this.state.height}>
             <g transform={`translate(${this.state.horizontalTextSize})`}>
               {this.props.data.map((d, i) =>

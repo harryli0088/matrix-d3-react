@@ -75,7 +75,7 @@ let matrix = [
 
 //precompute the orders using d3
 let orders = {
-  row: {
+  rows: {
     name: d3.range(rows.length).sort(function(a, b) { return d3.ascending(rows[a].name, rows[b].name); }),
     count: d3.range(rows.length).sort(function(a, b) { return rows[b].count - rows[a].count; })
   },
@@ -122,6 +122,7 @@ export default class App extends Component {
           orders={orders}
           orderBy={this.state.orderBy}
           contentMaxHeight={1000}
+          font={"bold 16px arial"}
           gridColor="white"
         />
       </div>

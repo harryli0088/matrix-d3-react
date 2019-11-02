@@ -15,6 +15,7 @@ export default class Matrix extends Component {
     orders: PropTypes.object.isRequired,
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
+    font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
     gridColor: PropTypes.string //optional string for the color of the grid lines
   }
 
@@ -107,7 +108,8 @@ export default class Matrix extends Component {
           <svg width={this.state.width} height={this.state.height}>
             <g transform={`translate(${this.state.horizontalTextSize})`}>
               {this.props.data.map((d, i) =>
-                <Row key={i}
+                <Row
+                  key={i}
                   index={i}
                   heading={this.props.rows[i]}
                   data={d}
@@ -222,7 +224,7 @@ function getTextSize(context, text) {
     }
   }
 
-  return longestLength;
+  return longestLength + 20;
 }
 
 
@@ -230,7 +232,7 @@ function getTextSize(context, text) {
 //given props and state, return an object to update the next state
 function recalculate(props,state) {
   let context = document.createElement('canvas').getContext("2d");
-  context.font = "16pt arial";
+  context.font = props.font || "bold 16px arial";
 
   //get text label lengths
   const horizontalTextSize = getTextSize(context, props.rows);
@@ -241,7 +243,7 @@ function recalculate(props,state) {
 
   //in svg, y is rows and x is columns
   const x = d3.scaleBand().range([0, effectiveWidth]).domain(props.orders.columns[props.orderBy]);
-  const y = d3.scaleBand().range([0, state.height]).domain(props.orders.row[props.orderBy]);
+  const y = d3.scaleBand().range([0, state.height]).domain(props.orders.rows[props.orderBy]);
 
   const rectWidth = x.bandwidth();
   const rectHeight = y.bandwidth();

@@ -93,9 +93,16 @@ export default class App extends Component {
           colorFunction={colorFunction}
           orders={orders}
           orderBy={this.state.orderBy}
+
+          onMouseOverCallback={function(e, rowIndex, colIndex) { console.log(rowIndex, colIndex);}}
+          onMouseOutCallback={function(e) { console.log(e); }}
+          onClickCallback={function(e, rowIndex, colIndex) {console.log(rowIndex, colIndex);}}
           contentMaxHeight={1000}
-          font={"bold 16px arial"}
-          gridColor="white"
+          font={"bold 16px Arial"}
+          gridLinesColor="gray"
+          minWidth={500}
+          minRectSize={20}
+          textOffset={5}
         />
       </div>
     )

@@ -4,8 +4,7 @@ import * as d3 from "d3";
 
 import "./styles.css";
 
-const MIN_RECT_SIZE = 20;
-const TEXT_OFFSET = 5;
+const SCROLLBAR_SIZE = 17;
 
 export default class Matrix extends Component {
   static propTypes = {
@@ -13,10 +12,31 @@ export default class Matrix extends Component {
     rows: PropTypes.array.isRequired,
     columns: PropTypes.array.isRequired, //[strings of the vertical column texts]
     orders: PropTypes.object.isRequired,
+    orderBy: PropTypes.string.isRequired,
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
+
+    //optional props
+    onMouseOverCallback: PropTypes.func,
+    onMouseOutCallback: PropTypes.func,
+    onClickCallback: PropTypes.func,
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
-    gridColor: PropTypes.string //optional string for the color of the grid lines
+    gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
+    minWidth: PropTypes.number,
+    minRectSize: PropTypes.number,
+    textOffset: PropTypes.number,
+  }
+
+  static defaultProps = {
+    onMouseOverCallback: function(e, rowIndex, colIndex) {},
+    onMouseOutCallback: function(e) {},
+    onClickCallback: function(e, rowIndex, colIndex) {},
+    //no contentMaxHeight default,
+    font: "bold 16px Arial",
+    gridLinesColor: "gray",
+    minWidth: 500,
+    minRectSize: 20,
+    textOffset: 5,
   }
 
   constructor(props) {
@@ -24,104 +44,127 @@ export default class Matrix extends Component {
 
     this.state = {
       width: 500,
-      minWidth: 500,
-      height: 500,
-      horizontalTextSize: 0,
-      verticalTextSize: 0,
-      effectiveWidth: 500,
-      x: function() {},
-      y: function() {},
-      rectWidth: MIN_RECT_SIZE,
-      rectHeight: MIN_RECT_SIZE,
-      gridColor: "gray",
-
 
       mouseoverRowIndex: -1,
       mouseoverColIndex: -1,
     };
 
-    this.resize = this.resize.bind(this);
-    this.mouseover = this.mouseover.bind(this);
-    this.mouseout = this.mouseout.bind(this);
-
     this.matrix = React.createRef();
   }
 
   componentDidMount() {
-    this.setState( recalculate(this.props,this.state) );
-
     window.addEventListener('resize', this.resize); //add resize listener for responsiveness
 
     this.resize(); //initial resize
   }
 
-  static getDerivedStateFromProps(props, state) {
-    return recalculate(props,state);
-  }
 
-
-
-  resize() {
+  resize = () => {
     if(this.matrix.current) {
       this.setState({
-        width: Math.max(this.matrix.current.clientWidth, this.state.minWidth), //responsive chart width
+        width: Math.max(this.matrix.current.clientWidth, this.props.minWidth), //responsive chart width
       });
     }
   }
 
-  mouseover(rowIndex, colIndex) {
+  mouseover = (e, rowIndex, colIndex) => {
     this.setState({
       mouseoverRowIndex: rowIndex,
       mouseoverColIndex: colIndex
     });
+
+    this.props.onMouseOverCallback(e, rowIndex, colIndex);
   }
 
-  mouseout() {
+  mouseout = e => {
     this.setState({
       mouseoverRowIndex: -1,
       mouseoverColIndex: -1
     });
+
+    this.props.onMouseOutCallback(e);
   }
 
 
   render() {
+    const {
+      data,
+      rows,
+      columns,
+      orders,
+      orderBy,
+      colorFunction,
+
+      //onMouseOverCallback not used here
+      //onMouseOutCallback not used here
+      onClickCallback,
+      contentMaxHeight,
+      font,
+      gridLinesColor,
+      //minWidth not used here
+      minRectSize,
+      textOffset,
+    } = this.props
+
+    let context = document.createElement('canvas').getContext("2d");
+    context.font = font;
+
+    //get text label lengths
+    const horizontalTextSize = getTextSize(context, rows, textOffset);
+    const verticalTextSize = getTextSize(context, columns, textOffset);
+
+    //effective width of the matric minus horitzontal text and scrollbar
+    const effectiveWidth = this.state.width - horizontalTextSize - (contentMaxHeight?SCROLLBAR_SIZE:0);
+    const height = data.length*minRectSize;
+
+    //in svg, y is rows and x is columns
+    const x = d3.scaleBand().range([0, effectiveWidth]).domain(orders.columns[orderBy]);
+    const y = d3.scaleBand().range([0, height]).domain(orders.rows[orderBy]);
+
+    const rectWidth = x.bandwidth();
+    const rectHeight = y.bandwidth();
+
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
-        <svg width={this.state.width} height={this.state.verticalTextSize}>
-          <g transform={`translate(${this.state.horizontalTextSize}, ${this.state.verticalTextSize})`}>
-            {this.props.columns.map((d, i) =>
+        <svg width={this.state.width} height={verticalTextSize}>
+          <g transform={`translate(${horizontalTextSize}, ${verticalTextSize})`}>
+            {columns.map((d, i) =>
               <ColHeading key={i}
                 index={i}
                 data={d}
-                xScale={this.state.x}
-                rectWidth={this.state.rectWidth}
+                xScale={x}
+                rectWidth={rectWidth}
+                textOffset={textOffset}
 
                 mouseover={this.mouseover}
                 mouseoverColIndex={this.state.mouseoverColIndex}
+                onClickCallback={onClickCallback}
               />
             )}
           </g>
         </svg>
 
-        <div style={this.props.contentMaxHeight<this.state.height ? {"maxHeight":this.props.contentMaxHeight,"overflowY":"auto","width":this.state.width+17} : {}}>
-          <svg width={this.state.width} height={this.state.height}>
-            <g transform={`translate(${this.state.horizontalTextSize})`}>
-              {this.props.data.map((d, i) =>
+        <div style={contentMaxHeight<height ? {"maxHeight":contentMaxHeight,"overflowY":"auto","width":this.state.width+SCROLLBAR_SIZE} : {}}>
+          <svg width={this.state.width} height={height}>
+            <g transform={`translate(${horizontalTextSize})`}>
+              {data.map((d, i) =>
                 <Row
                   key={i}
                   index={i}
-                  heading={this.props.rows[i]}
+                  heading={rows[i]}
                   data={d}
-                  xScale={this.state.x}
-                  yScale={this.state.y}
-                  rectWidth={this.state.rectWidth}
-                  rectHeight={this.state.rectHeight}
-                  chartWidth={this.state.effectiveWidth}
-                  colorFunction={this.props.colorFunction}
-                  gridColor={this.state.gridColor}
+                  xScale={x}
+                  yScale={y}
+                  rectWidth={rectWidth}
+                  rectHeight={rectHeight}
+                  chartWidth={effectiveWidth}
+                  colorFunction={colorFunction}
+                  gridLinesColor={gridLinesColor}
+                  textOffset={textOffset}
 
                   mouseover={this.mouseover}
+                  onClickCallback={onClickCallback}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
                   mouseoverColIndex={this.state.mouseoverColIndex}
                 />
@@ -131,10 +174,10 @@ export default class Matrix extends Component {
                 <ColGrid key={i}
                   index={i}
                   data={d}
-                  xScale={this.state.x}
-                  rectWidth={this.state.rectWidth}
-                  chartHeight={this.state.height}
-                  gridColor={this.state.gridColor}
+                  xScale={x}
+                  rectWidth={rectWidth}
+                  chartHeight={height}
+                  gridLinesColor={gridLinesColor}
                 />
               )}
             </g>
@@ -164,7 +207,8 @@ class Row extends Component {
             width={this.props.rectWidth}
             height={this.props.rectHeight}
 
-            onMouseOver={() => this.props.mouseover(this.props.index, i)}
+            onMouseOver={e => this.props.mouseover(e, this.props.index, i)}
+            onClick={e => this.props.onClickCallback(e, this.props.index, i)}
             >
           </rect>
         )}
@@ -174,15 +218,16 @@ class Row extends Component {
           transform={"translate(0," + this.props.yScale(this.props.index) + ")"}>
 
 
-          <line x2={this.props.chartWidth} stroke={this.props.gridColor}></line>
-          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridColor}></line>
+          <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor}></line>
+          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor}></line>
 
           <text
-            x={-1*TEXT_OFFSET}
+            x={-1*this.props.textOffset}
             y={(this.props.rectHeight+8)/2}
             textAnchor="end"
 
-            onMouseOver={() => this.props.mouseover(this.props.index, -1)}
+            onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
+            onClick={e => this.props.onClickCallback(e, this.props.index, -1)}
           >
             {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
           </text>
@@ -196,8 +241,8 @@ class ColGrid extends Component {
   render() {
     return (
       <g transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}>
-        <line x1={-1*this.props.chartHeight} stroke={this.props.gridColor}></line>
-        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth} stroke={this.props.gridColor}></line>
+        <line x1={-1*this.props.chartHeight} stroke={this.props.gridLinesColor}></line>
+        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth} stroke={this.props.gridLinesColor}></line>
       </g>
     );
   }
@@ -206,8 +251,12 @@ class ColGrid extends Component {
 class ColHeading extends Component {
   render() {
     return (
-      <g className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"} onMouseOver={() => this.props.mouseover(-1, this.props.index)}>
-        <text x={TEXT_OFFSET} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data.name}</text>
+      <g
+        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
+        onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
+        onClick={e => this.props.onClickCallback(e, -1, this.props.index)}
+      >
+        <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data.name}</text>
       </g>
     );
   }
@@ -215,7 +264,7 @@ class ColHeading extends Component {
 
 
 //given a canvas context and some text, return the longest length in pixels
-function getTextSize(context, text) {
+function getTextSize(context, text, textOffset) {
   let longestLength = 0;
   for(let i=0; i<text.length; ++i) {
     const length = context.measureText(text[i].name + "("+text[i].count+")").width;
@@ -224,42 +273,5 @@ function getTextSize(context, text) {
     }
   }
 
-  return longestLength + 20;
-}
-
-
-
-//given props and state, return an object to update the next state
-function recalculate(props,state) {
-  let context = document.createElement('canvas').getContext("2d");
-  context.font = props.font || "bold 16px arial";
-
-  //get text label lengths
-  const horizontalTextSize = getTextSize(context, props.rows);
-  const verticalTextSize = getTextSize(context, props.columns);
-
-  //effective width of the matric minus horitzontal text and scrollbar
-  const effectiveWidth = state.width - state.horizontalTextSize - (props.contentMaxHeight?17:0);
-
-  //in svg, y is rows and x is columns
-  const x = d3.scaleBand().range([0, effectiveWidth]).domain(props.orders.columns[props.orderBy]);
-  const y = d3.scaleBand().range([0, state.height]).domain(props.orders.rows[props.orderBy]);
-
-  const rectWidth = x.bandwidth();
-  const rectHeight = y.bandwidth();
-
-  const gridColor = props.gridColor || "gray";
-
-  return {
-    horizontalTextSize: horizontalTextSize,
-    verticalTextSize: verticalTextSize,
-    minWidth: horizontalTextSize + props.columns.length*MIN_RECT_SIZE + TEXT_OFFSET, //text label length, plus number of rectable widths, plus text offset
-    height: props.data.length*MIN_RECT_SIZE + TEXT_OFFSET,
-    effectiveWidth: effectiveWidth,
-    x: x,
-    y: y,
-    rectWidth: rectWidth,
-    rectHeight: rectHeight,
-    gridColor: gridColor
-  };
+  return longestLength + textOffset + 20;
 }

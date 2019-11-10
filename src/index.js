@@ -154,6 +154,7 @@ export default class Matrix extends Component {
                   index={i}
                   heading={rows[i]}
                   data={d}
+                  columns={columns}
                   xScale={x}
                   yScale={y}
                   rectWidth={rectWidth}
@@ -209,7 +210,8 @@ class Row extends Component {
 
             onMouseOver={e => this.props.mouseover(e, this.props.index, i)}
             onClick={e => this.props.onClickCallback(e, this.props.index, i)}
-            >
+          >
+            <title>{this.props.heading.name + ", " + this.props.columns[i].name + ": " + d.z}</title>
           </rect>
         )}
 

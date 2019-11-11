@@ -33,6 +33,7 @@ export default class Matrix extends Component {
       PropTypes.string,
       PropTypes.number
     ]),
+    transition: PropTypes.string,
   }
 
   static defaultProps = {
@@ -47,6 +48,7 @@ export default class Matrix extends Component {
     textOffset: 5,
     highlightOpacity: 1,
     normalOpacity: 0.75,
+    transition: "1s",
   }
 
   constructor(props) {
@@ -120,6 +122,7 @@ export default class Matrix extends Component {
       textOffset,
       highlightOpacity,
       normalOpacity,
+      transition,
     } = this.props
 
     let context = document.createElement('canvas').getContext("2d");
@@ -155,6 +158,7 @@ export default class Matrix extends Component {
                 font={font}
                 highlightOpacity={highlightOpacity}
                 normalOpacity={normalOpacity}
+                transition={transition}
 
                 mouseover={this.mouseover}
                 mouseoverColIndex={this.state.mouseoverColIndex}
@@ -185,6 +189,7 @@ export default class Matrix extends Component {
                   textOffset={textOffset}
                   highlightOpacity={highlightOpacity}
                   normalOpacity={normalOpacity}
+                  transition={transition}
 
                   mouseover={this.mouseover}
                   onClickCallback={onClickCallback}
@@ -219,13 +224,22 @@ class Row extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <g
+        style={{
+          opacity: (this.props.index===this.props.mouseoverRowIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
+          fontWeight: (this.props.index===this.props.mouseoverRowIndex) ? "bold" : "",
+          font:this.props.font,
+          transform: "translateY(" + this.props.yScale(this.props.index) + "px)",
+          transition: this.props.transition,
+          transitionProperty: "transform",
+        }}
+      >
         {this.props.data.map((d, i) =>
           <rect
             key={i}
             fill={this.props.colorFunction(d.z)}
             x={this.props.xScale(d.c)}
-            y={this.props.yScale(d.r)}
+            y={0}
             width={this.props.rectWidth}
             height={this.props.rectHeight}
 
@@ -233,40 +247,31 @@ class Row extends Component {
             onClick={e => this.props.onClickCallback(e, this.props.index, i)}
 
             style={{
-              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity
+              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
+              transition: this.props.transition,
+              transitionProperty: "x",
             }}
           >
             <title>{this.props.heading.name + ", " + this.props.columns[i].name + ": " + d.z}</title>
           </rect>
         )}
 
-        <g
-          transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
 
-          style={
-            (this.props.index===this.props.mouseoverRowIndex) ?
-            {opacity: this.props.highlightOpacity, fontWeight:"bold", font:this.props.font} :
-            {opacity: this.props.normalOpacity, font:this.props.font}
-          }
+        <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor}></line>
+        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor}></line>
+
+        <text
+          x={-1*this.props.textOffset}
+          y={this.props.rectHeight}
+          dy="-0.35em"
+          textAnchor="end"
+
+          onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
+          onClick={e => this.props.onClickCallback(e, this.props.index, -1)}
         >
-
-
-          <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor}></line>
-          <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor}></line>
-
-          <text
-            x={-1*this.props.textOffset}
-            y={this.props.rectHeight}
-            dy="-0.35em"
-            textAnchor="end"
-
-            onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
-            onClick={e => this.props.onClickCallback(e, this.props.index, -1)}
-          >
-            {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
-          </text>
-        </g>
-      </React.Fragment>
+          {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
+        </text>
+      </g>
     );
   }
 }
@@ -286,17 +291,21 @@ class ColHeading extends Component {
   render() {
     return (
       <g
-        transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
         onClick={e => this.props.onClickCallback(e, -1, this.props.index)}
 
-        style={
-          (this.props.index===this.props.mouseoverColIndex) ?
-          {opacity: this.props.highlightOpacity, fontWeight:"bold", font:this.props.font} :
-          {opacity: this.props.normalOpacity, font:this.props.font}
-        }
+        style={{
+          opacity: (this.props.index===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
+          fontWeight: (this.props.index===this.props.mouseoverColIndex) ? "bold" : "",
+          font: this.props.font,
+          transform: "translateX(" + this.props.xScale(this.props.index) + "px) rotate(-90deg)",
+          transition: this.props.transition,
+          transitionProperty: "transform",
+        }}
       >
-        <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data.name}</text>
+        <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">
+          {this.props.data.count!=undefined ? "("+this.props.data.count+")" : ""} {this.props.data.name}
+        </text>
       </g>
     );
   }

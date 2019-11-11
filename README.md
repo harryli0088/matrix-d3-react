@@ -1,5 +1,5 @@
 # matrix-d3-react
-> responsive, order-able matrix viz using d3 and react
+> responsive, order-able, highlight-able matrix viz using d3 and react
 
 ![Demo](/example/matrix-d3-react.gif)
 
@@ -111,9 +111,9 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          onMouseOverCallback={function(e, rowIndex, colIndex) { console.log(rowIndex, colIndex);}}
-          onMouseOutCallback={function(e) { console.log(e); }}
-          onClickCallback={function(e, rowIndex, colIndex) {console.log(rowIndex, colIndex);}}
+          onMouseOverCallback={function(e, rowIndex, colIndex) {}}
+          onMouseOutCallback={function(e) {}}
+          onClickCallback={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
           font={"bold 16px Arial"}
           gridLinesColor="gray"
@@ -122,6 +122,7 @@ export default class App extends Component {
           textOffset={5}
           highlightOpacity={1}
           normalOpacity={0.75}
+          transition="1s"
         />
       </div>
     )
@@ -149,6 +150,7 @@ Optional props
 - `textOffset` {Number} defaults to `5`
 - `highlightOpacity` {Number | String} defaults to `1`
 - `normalOpacity` {Number | String} defaults to `0.75`
+- `transition` {String} defaults to `1s`
 
 ## Acknowledgments
 Built primarily from this example: https://bost.ocks.org/mike/miserables/

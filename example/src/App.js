@@ -94,15 +94,17 @@ export default class App extends Component {
           orders={orders}
           orderBy={this.state.orderBy}
 
-          onMouseOverCallback={function(e, rowIndex, colIndex) { console.log(rowIndex, colIndex);}}
-          onMouseOutCallback={function(e) { console.log(e); }}
-          onClickCallback={function(e, rowIndex, colIndex) {console.log(rowIndex, colIndex);}}
+          onMouseOverCallback={function(e, rowIndex, colIndex) {}}
+          onMouseOutCallback={function(e) {}}
+          onClickCallback={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
-          font={"bold 16px Arial"}
+          font={"16px Arial"}
           gridLinesColor="gray"
           minWidth={500}
           minRectSize={20}
           textOffset={5}
+          highlightOpacity={1}
+          normalOpacity={0.75}
         />
       </div>
     )

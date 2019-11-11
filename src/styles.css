@@ -1,17 +1,3 @@
 .matrix {
   overflow: auto;
 }
-
-.matrix rect {
-  opacity: 0.75;
-}
-
-
-
-.matrix text.hover, .matrix .hover text  {
-  font-weight: bold;
-}
-
-.matrix rect.hover, .matrix .hover rect  {
-  opacity: 1;
-}

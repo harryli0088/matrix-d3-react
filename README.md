@@ -5,18 +5,6 @@
 
 GIF created using [https://ezgif.com/video-to-gif](https://ezgif.com/video-to-gif)
 
-## Develop
-```bash
-npm install
-npm start #live reload when you make a change
-
-#open another terminal / tab
-cd example
-npm install
-npm start #live reload when you make a change
-```
-
-
 ## Install
 
 ```bash
@@ -58,7 +46,7 @@ let columns = [
 //matrix data, 2d array where each element is an object with fields:
 //r (row): the index of the corresponding element in rows
 //c (column): the index of the corresponding element in columns
-//z (count): the value of the count for this element, an input to colorFunction
+//z (count): the value of the count for this element, an input to colurFunction
 let matrix = [
   [ {"r":0,"c":0,"z":0}, {"r":0,"c":1,"z":0}, {"r":0,"c":2,"z":9} ],
   [ {"r":1,"c":0,"z":6}, {"r":1,"c":1,"z":7}, {"r":1,"c":2,"z":4} ],
@@ -85,7 +73,7 @@ let orders = {
   }
 }
 
-let orderByOptions = ["name","count"]; //array of options that the user can sort the array by
+let orderByOptions = ["name","count"]; //array of options that the user can sore the array by
 
 
 export default class App extends Component {
@@ -121,15 +109,48 @@ export default class App extends Component {
           colorFunction={colorFunction}
           orders={orders}
           orderBy={this.state.orderBy}
+
+          onMouseOverCallback={function(e, rowIndex, colIndex) { console.log(rowIndex, colIndex);}}
+          onMouseOutCallback={function(e) { console.log(e); }}
+          onClickCallback={function(e, rowIndex, colIndex) {console.log(rowIndex, colIndex);}}
           contentMaxHeight={1000}
-          font={"bold 16px arial"}
-          gridColor="white"
+          font={"bold 16px Arial"}
+          gridLinesColor="gray"
+          minWidth={500}
+          minRectSize={20}
+          textOffset={5}
+          highlightOpacity={1}
+          normalOpacity={0.75}
         />
       </div>
     )
   }
 }
 ```
+
+### Props
+- `data` {Array} Required
+- `rows` {Array} Required array of strings
+- `columns` {Array} Required array of strings
+- `colorFunction` {Function} Required, given a value, returns a color
+- `orders` {Object} Required
+- `orderBy` {String} Required
+
+Optional props
+- `onMouseOverCallback` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `onMouseOutCallback` {Function} defaults to `function(e) {}`
+- `onClickCallback` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
+- `font` {String} defaults to `16px Arial`
+- `gridLinesColor` {String} defaults to `gray`
+- `minWidth` {Number} defaults to `500`
+- `minRectSize` {Number} defaults to `20`
+- `textOffset` {Number} defaults to `5`
+- `highlightOpacity` {Number} defaults to `1`
+- `normalOpacity` {Number} defaults to `0.75`
+
+## Acknowledgments
+Built primarily from this example: https://bost.ocks.org/mike/miserables/
 
 ## License
 

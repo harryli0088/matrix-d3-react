@@ -25,6 +25,14 @@ export default class Matrix extends Component {
     minWidth: PropTypes.number,
     minRectSize: PropTypes.number,
     textOffset: PropTypes.number,
+    highlightOpacity: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
+    normalOpacity: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
   }
 
   static defaultProps = {
@@ -32,11 +40,13 @@ export default class Matrix extends Component {
     onMouseOutCallback: function(e) {},
     onClickCallback: function(e, rowIndex, colIndex) {},
     //no contentMaxHeight default,
-    font: "bold 16px Arial",
+    font: "16px Arial",
     gridLinesColor: "gray",
     minWidth: 500,
     minRectSize: 20,
     textOffset: 5,
+    highlightOpacity: 1,
+    normalOpacity: 0.75,
   }
 
   constructor(props) {
@@ -56,6 +66,10 @@ export default class Matrix extends Component {
     window.addEventListener('resize', this.resize); //add resize listener for responsiveness
 
     this.resize(); //initial resize
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
   }
 
 
@@ -104,6 +118,8 @@ export default class Matrix extends Component {
       //minWidth not used here
       minRectSize,
       textOffset,
+      highlightOpacity,
+      normalOpacity,
     } = this.props
 
     let context = document.createElement('canvas').getContext("2d");
@@ -136,6 +152,9 @@ export default class Matrix extends Component {
                 xScale={x}
                 rectWidth={rectWidth}
                 textOffset={textOffset}
+                font={font}
+                highlightOpacity={highlightOpacity}
+                normalOpacity={normalOpacity}
 
                 mouseover={this.mouseover}
                 mouseoverColIndex={this.state.mouseoverColIndex}
@@ -161,8 +180,11 @@ export default class Matrix extends Component {
                   rectHeight={rectHeight}
                   chartWidth={effectiveWidth}
                   colorFunction={colorFunction}
+                  font={font}
                   gridLinesColor={gridLinesColor}
                   textOffset={textOffset}
+                  highlightOpacity={highlightOpacity}
+                  normalOpacity={normalOpacity}
 
                   mouseover={this.mouseover}
                   onClickCallback={onClickCallback}
@@ -201,7 +223,6 @@ class Row extends Component {
         {this.props.data.map((d, i) =>
           <rect
             key={i}
-            className={(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex ? "hover " : "") + "cell"}
             fill={this.props.colorFunction(d.z)}
             x={this.props.xScale(d.c)}
             y={this.props.yScale(d.r)}
@@ -210,14 +231,24 @@ class Row extends Component {
 
             onMouseOver={e => this.props.mouseover(e, this.props.index, i)}
             onClick={e => this.props.onClickCallback(e, this.props.index, i)}
+
+            style={{
+              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity
+            }}
           >
             <title>{this.props.heading.name + ", " + this.props.columns[i].name + ": " + d.z}</title>
           </rect>
         )}
 
         <g
-          className={this.props.index===this.props.mouseoverRowIndex ? "hover " : ""}
-          transform={"translate(0," + this.props.yScale(this.props.index) + ")"}>
+          transform={"translate(0," + this.props.yScale(this.props.index) + ")"}
+
+          style={
+            (this.props.index===this.props.mouseoverRowIndex) ?
+            {opacity: this.props.highlightOpacity, fontWeight:"bold", font:this.props.font} :
+            {opacity: this.props.normalOpacity, font:this.props.font}
+          }
+        >
 
 
           <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor}></line>
@@ -225,7 +256,8 @@ class Row extends Component {
 
           <text
             x={-1*this.props.textOffset}
-            y={(this.props.rectHeight+8)/2}
+            y={this.props.rectHeight}
+            dy="-0.35em"
             textAnchor="end"
 
             onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
@@ -254,9 +286,15 @@ class ColHeading extends Component {
   render() {
     return (
       <g
-        className={this.props.index===this.props.mouseoverColIndex ? "hover " : ""} transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
+        transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
         onClick={e => this.props.onClickCallback(e, -1, this.props.index)}
+
+        style={
+          (this.props.index===this.props.mouseoverColIndex) ?
+          {opacity: this.props.highlightOpacity, fontWeight:"bold", font:this.props.font} :
+          {opacity: this.props.normalOpacity, font:this.props.font}
+        }
       >
         <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">{this.props.data.name}</text>
       </g>

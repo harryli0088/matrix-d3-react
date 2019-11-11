@@ -110,6 +110,7 @@ export default class App extends Component {
           orders={orders}
           orderBy={this.state.orderBy}
 
+          //optional props with their defaults shown
           onMouseOverCallback={function(e, rowIndex, colIndex) { console.log(rowIndex, colIndex);}}
           onMouseOutCallback={function(e) { console.log(e); }}
           onClickCallback={function(e, rowIndex, colIndex) {console.log(rowIndex, colIndex);}}
@@ -146,8 +147,8 @@ Optional props
 - `minWidth` {Number} defaults to `500`
 - `minRectSize` {Number} defaults to `20`
 - `textOffset` {Number} defaults to `5`
-- `highlightOpacity` {Number} defaults to `1`
-- `normalOpacity` {Number} defaults to `0.75`
+- `highlightOpacity` {Number | String} defaults to `1`
+- `normalOpacity` {Number | String} defaults to `0.75`
 
 ## Acknowledgments
 Built primarily from this example: https://bost.ocks.org/mike/miserables/

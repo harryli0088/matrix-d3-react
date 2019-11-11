@@ -94,6 +94,7 @@ export default class App extends Component {
           orders={orders}
           orderBy={this.state.orderBy}
 
+          //optional props with their defaults shown
           onMouseOverCallback={function(e, rowIndex, colIndex) {}}
           onMouseOutCallback={function(e) {}}
           onClickCallback={function(e, rowIndex, colIndex) {}}

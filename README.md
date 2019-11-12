@@ -111,9 +111,9 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          onMouseOverCallback={function(e, rowIndex, colIndex) {}}
-          onMouseOutCallback={function(e) {}}
-          onClickCallback={function(e, rowIndex, colIndex) {}}
+          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
+          onMouseOutHandler={function(e) {}}
+          onClickHandler={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
           font={"bold 16px Arial"}
           gridLinesColor="gray"
@@ -139,9 +139,9 @@ export default class App extends Component {
 - `orderBy` {String} Required
 
 Optional props
-- `onMouseOverCallback` {Function} defaults to `function(e, rowIndex, colIndex) {}`
-- `onMouseOutCallback` {Function} defaults to `function(e) {}`
-- `onClickCallback` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `onMouseOverHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `onMouseOutHandler` {Function} defaults to `function(e) {}`
+- `onClickHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
 - `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
 - `font` {String} defaults to `16px Arial`
 - `gridLinesColor` {String} defaults to `gray`

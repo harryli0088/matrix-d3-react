@@ -16,9 +16,9 @@ export default class Matrix extends Component {
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
 
     //optional props
-    onMouseOverCallback: PropTypes.func,
-    onMouseOutCallback: PropTypes.func,
-    onClickCallback: PropTypes.func,
+    onMouseOverHandler: PropTypes.func,
+    onMouseOutHandler: PropTypes.func,
+    onClickHandler: PropTypes.func,
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
@@ -37,9 +37,9 @@ export default class Matrix extends Component {
   }
 
   static defaultProps = {
-    onMouseOverCallback: function(e, rowIndex, colIndex) {},
-    onMouseOutCallback: function(e) {},
-    onClickCallback: function(e, rowIndex, colIndex) {},
+    onMouseOverHandler: function(e, rowIndex, colIndex) {},
+    onMouseOutHandler: function(e) {},
+    onClickHandler: function(e, rowIndex, colIndex) {},
     //no contentMaxHeight default,
     font: "16px Arial",
     gridLinesColor: "gray",
@@ -89,7 +89,7 @@ export default class Matrix extends Component {
       mouseoverColIndex: colIndex
     });
 
-    this.props.onMouseOverCallback(e, rowIndex, colIndex);
+    this.props.onMouseOverHandler(e, rowIndex, colIndex);
   }
 
   mouseout = e => {
@@ -98,7 +98,7 @@ export default class Matrix extends Component {
       mouseoverColIndex: -1
     });
 
-    this.props.onMouseOutCallback(e);
+    this.props.onMouseOutHandler(e);
   }
 
 
@@ -111,9 +111,9 @@ export default class Matrix extends Component {
       orderBy,
       colorFunction,
 
-      //onMouseOverCallback not used here
-      //onMouseOutCallback not used here
-      onClickCallback,
+      //onMouseOverHandler not used here
+      //onMouseOutHandler not used here
+      onClickHandler,
       contentMaxHeight,
       font,
       gridLinesColor,
@@ -162,7 +162,7 @@ export default class Matrix extends Component {
 
                 mouseover={this.mouseover}
                 mouseoverColIndex={this.state.mouseoverColIndex}
-                onClickCallback={onClickCallback}
+                onClickHandler={onClickHandler}
               />
             )}
           </g>
@@ -192,7 +192,7 @@ export default class Matrix extends Component {
                   transition={transition}
 
                   mouseover={this.mouseover}
-                  onClickCallback={onClickCallback}
+                  onClickHandler={onClickHandler}
                   mouseoverRowIndex={this.state.mouseoverRowIndex}
                   mouseoverColIndex={this.state.mouseoverColIndex}
                 />
@@ -244,7 +244,7 @@ class Row extends Component {
             height={this.props.rectHeight}
 
             onMouseOver={e => this.props.mouseover(e, this.props.index, i)}
-            onClick={e => this.props.onClickCallback(e, this.props.index, i)}
+            onClick={e => this.props.onClickHandler(e, this.props.index, i)}
 
             style={{
               opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
@@ -267,7 +267,7 @@ class Row extends Component {
           textAnchor="end"
 
           onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
-          onClick={e => this.props.onClickCallback(e, this.props.index, -1)}
+          onClick={e => this.props.onClickHandler(e, this.props.index, -1)}
         >
           {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
         </text>
@@ -292,7 +292,7 @@ class ColHeading extends Component {
     return (
       <g
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
-        onClick={e => this.props.onClickCallback(e, -1, this.props.index)}
+        onClick={e => this.props.onClickHandler(e, -1, this.props.index)}
 
         style={{
           opacity: (this.props.index===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,

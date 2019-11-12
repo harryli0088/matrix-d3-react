@@ -95,9 +95,9 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          onMouseOverCallback={function(e, rowIndex, colIndex) {}}
-          onMouseOutCallback={function(e) {}}
-          onClickCallback={function(e, rowIndex, colIndex) {}}
+          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
+          onMouseOutHandler={function(e) {}}
+          onClickHandler={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
           font={"16px Arial"}
           gridLinesColor="gray"

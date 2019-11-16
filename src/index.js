@@ -22,7 +22,6 @@ export default class Matrix extends Component {
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
-    minWidth: PropTypes.number,
     minRectSize: PropTypes.number,
     textOffset: PropTypes.number,
     highlightOpacity: PropTypes.oneOfType([
@@ -43,7 +42,6 @@ export default class Matrix extends Component {
     //no contentMaxHeight default,
     font: "16px Arial",
     gridLinesColor: "gray",
-    minWidth: 500,
     minRectSize: 20,
     textOffset: 5,
     highlightOpacity: 1,
@@ -78,7 +76,7 @@ export default class Matrix extends Component {
   resize = () => {
     if(this.matrix.current) {
       this.setState({
-        width: Math.max(this.matrix.current.clientWidth, this.props.minWidth), //responsive chart width
+        width: this.matrix.current.clientWidth, //responsive chart width
       });
     }
   }
@@ -117,7 +115,6 @@ export default class Matrix extends Component {
       contentMaxHeight,
       font,
       gridLinesColor,
-      //minWidth not used here
       minRectSize,
       textOffset,
       highlightOpacity,
@@ -133,7 +130,9 @@ export default class Matrix extends Component {
     const verticalTextSize = getTextSize(context, columns, textOffset);
 
     //effective width of the matric minus horitzontal text and scrollbar
-    const effectiveWidth = this.state.width - horizontalTextSize - (contentMaxHeight?SCROLLBAR_SIZE:0);
+    const minWidth = horizontalTextSize + columns.length*minRectSize + (contentMaxHeight?SCROLLBAR_SIZE:0);
+    const width = Math.max(minWidth, this.state.width);
+    const effectiveWidth = width - horizontalTextSize - (contentMaxHeight?SCROLLBAR_SIZE:0);
     const height = data.length*minRectSize;
 
     //in svg, y is rows and x is columns
@@ -146,7 +145,7 @@ export default class Matrix extends Component {
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
-        <svg width={this.state.width} height={verticalTextSize}>
+        <svg width={width} height={verticalTextSize}>
           <g transform={`translate(${horizontalTextSize}, ${verticalTextSize})`}>
             {columns.map((d, i) =>
               <ColHeading key={i}
@@ -168,8 +167,8 @@ export default class Matrix extends Component {
           </g>
         </svg>
 
-        <div style={contentMaxHeight<height ? {"maxHeight":contentMaxHeight,"overflowY":"auto","width":this.state.width+SCROLLBAR_SIZE} : {}}>
-          <svg width={this.state.width} height={height}>
+        <div style={contentMaxHeight<height ? {"maxHeight":contentMaxHeight,"overflowY":"auto","width":width+SCROLLBAR_SIZE} : {}}>
+          <svg width={width} height={height}>
             <g transform={`translate(${horizontalTextSize})`}>
               {data.map((d, i) =>
                 <Row

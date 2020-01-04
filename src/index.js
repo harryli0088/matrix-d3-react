@@ -132,8 +132,8 @@ export default class Matrix extends Component {
     context.font = font;
 
     //get text label lengths
-    const horizontalTextSize = getTextSize(context, rows, textOffset);
-    const verticalTextSize = getTextSize(context, columns, textOffset);
+    const horizontalTextSize = getTextSize(context, rows, formatRowHeading, textOffset);
+    const verticalTextSize = getTextSize(context, columns, formatColHeading, textOffset);
 
     //effective width of the matric minus horitzontal text and scrollbar
     const minWidth = horizontalTextSize + columns.length*minRectSize + (contentMaxHeight?SCROLLBAR_SIZE:0);
@@ -325,10 +325,10 @@ class ColHeading extends Component {
 
 
 //given a canvas context and some text, return the longest length in pixels
-function getTextSize(context, text, textOffset) {
+function getTextSize(context, headings, formatText, textOffset) {
   let longestLength = 0;
-  for(let i=0; i<text.length; ++i) {
-    const length = context.measureText(text[i].name + "("+text[i].count+")").width;
+  for(let i=0; i<headings.length; ++i) {
+    const length = context.measureText(formatText(headings[i].name, headings[i].count)).width;
     if(length > longestLength) {
       longestLength = length;
     }

@@ -158,6 +158,8 @@ Optional props
 - `onClickHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
 - `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
 - `font` {String} defaults to `16px Arial`
+- `formatRowHeading` {Function} defaults to `function(text, count) { return text + (count>0 ? " ("+count+")" : "") }`
+- `formatColHeading` {Function} defaults to `function(text, count) { return (count>0 ? "("+count+") " : "") + text }`
 - `gridLinesColor` {String} defaults to `gray`
 - `minRectSize` {Number} defaults to `20`
 - `textOffset` {Number} defaults to `5`

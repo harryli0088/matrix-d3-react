@@ -21,6 +21,8 @@ export default class Matrix extends Component {
     onClickHandler: PropTypes.func,
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
+    formatRowHeading: PropTypes.func,
+    formatColHeading: PropTypes.func,
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
     minRectSize: PropTypes.number,
     textOffset: PropTypes.number,
@@ -41,6 +43,8 @@ export default class Matrix extends Component {
     onClickHandler: function(e, rowIndex, colIndex) {},
     //no contentMaxHeight default,
     font: "16px Arial",
+    formatRowHeading: function(text, count) { return text + (count>0 ? " ("+count+")" : "") },
+    formatColHeading: function(text, count) { return (count>0 ? "("+count+") " : "") + text },
     gridLinesColor: "gray",
     minRectSize: 20,
     textOffset: 5,
@@ -114,6 +118,8 @@ export default class Matrix extends Component {
       onClickHandler,
       contentMaxHeight,
       font,
+      formatRowHeading,
+      formatColHeading,
       gridLinesColor,
       minRectSize,
       textOffset,
@@ -155,6 +161,7 @@ export default class Matrix extends Component {
                 rectWidth={rectWidth}
                 textOffset={textOffset}
                 font={font}
+                formatColHeading={formatColHeading}
                 highlightOpacity={highlightOpacity}
                 normalOpacity={normalOpacity}
                 transition={transition}
@@ -184,6 +191,7 @@ export default class Matrix extends Component {
                   chartWidth={effectiveWidth}
                   colorFunction={colorFunction}
                   font={font}
+                  formatRowHeading={formatRowHeading}
                   gridLinesColor={gridLinesColor}
                   textOffset={textOffset}
                   highlightOpacity={highlightOpacity}
@@ -222,6 +230,8 @@ class Row extends Component {
   }
 
   render() {
+    const fullName = this.props.heading.name + (this.props.heading.count!=undefined ? " ("+this.props.heading.count+")" : "");
+
     return (
       <g
         style={{
@@ -268,7 +278,8 @@ class Row extends Component {
           onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
           onClick={e => this.props.onClickHandler(e, this.props.index, -1)}
         >
-          {this.props.heading.name} {this.props.heading.count!=undefined ? "("+this.props.heading.count+")" : ""}
+          <title>{fullName}</title>
+          {this.props.formatRowHeading(this.props.heading.name, this.props.heading.count)}
         </text>
       </g>
     );
@@ -288,6 +299,7 @@ class ColGrid extends Component {
 
 class ColHeading extends Component {
   render() {
+    const fullName = (this.props.data.count!=undefined ? "("+this.props.data.count+") " : "") + this.props.data.name;
     return (
       <g
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
@@ -303,7 +315,8 @@ class ColHeading extends Component {
         }}
       >
         <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">
-          {this.props.data.count!=undefined ? "("+this.props.data.count+")" : ""} {this.props.data.name}
+          <title>{fullName}</title>
+          {this.props.formatColHeading(this.props.data.name, this.props.data.count)}
         </text>
       </g>
     );

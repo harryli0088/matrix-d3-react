@@ -125,6 +125,12 @@ export default class App extends Component {
           onClickHandler={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
           font={"16px Arial"}
+          formatRowHeading={function(text, count) {
+            return text + (count>0 ? " ("+count+")" : "")
+          }}
+          formatColHeading={function(text, count) {
+            return (count>0 ? "("+count+") " : "") + text
+          }}
           gridLinesColor="gray"
           minRectSize={20}
           textOffset={5}

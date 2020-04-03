@@ -34,6 +34,7 @@ export default class Matrix extends Component {
       PropTypes.string,
       PropTypes.number
     ]),
+    defaultHighlight: PropTypes.bool,
     transition: PropTypes.string,
   }
 
@@ -50,6 +51,7 @@ export default class Matrix extends Component {
     textOffset: 5,
     normalOpacity: 1,
     notHighlightedOpacity: 0.75,
+    defaultHighlight: true,
     transition: "1s",
   }
 
@@ -150,7 +152,7 @@ export default class Matrix extends Component {
 
 
     return (
-      <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout}>
+      <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout} style={{font: this.props.font}}>
         <svg width={width} height={verticalTextSize}>
           <g transform={`translate(${horizontalTextSize}, ${verticalTextSize})`}>
             {columns.map((d, i) =>
@@ -164,6 +166,7 @@ export default class Matrix extends Component {
                 formatColHeading={formatColHeading}
                 normalOpacity={normalOpacity}
                 notHighlightedOpacity={notHighlightedOpacity}
+                defaultHighlight={this.props.defaultHighlight}
                 transition={transition}
 
                 mouseover={this.mouseover}
@@ -197,6 +200,7 @@ export default class Matrix extends Component {
                   textOffset={textOffset}
                   normalOpacity={normalOpacity}
                   notHighlightedOpacity={notHighlightedOpacity}
+                  defaultHighlight={this.props.defaultHighlight}
                   transition={transition}
 
                   mouseover={this.mouseover}
@@ -236,9 +240,7 @@ class Row extends Component {
     return (
       <g
         style={{
-          // opacity: (this.props.index===this.props.mouseoverRowIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
           fontWeight: (this.props.index===this.props.mouseoverRowIndex) ? "bold" : "normal",
-          font:this.props.font,
           transform: "translateY(" + this.props.yScale(this.props.index) + "px)",
           transition: this.props.transition,
           transitionProperty: "transform",
@@ -257,7 +259,7 @@ class Row extends Component {
             onClick={e => this.props.onClickHandler(e, this.props.index, i)}
 
             style={{
-              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
+              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
               transition: this.props.transition,
               transitionProperty: "x",
             }}
@@ -307,9 +309,8 @@ class ColHeading extends Component {
         onClick={e => this.props.onClickHandler(e, -1, this.props.index)}
 
         style={{
-          opacity: (this.props.index===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
+          opacity: (this.props.index===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
           fontWeight: (this.props.index===this.props.mouseoverColIndex) ? "bold" : "normal",
-          font: this.props.font,
           transform: "translateX(" + this.props.xScale(this.props.index) + "px) rotate(-90deg)",
           transition: this.props.transition,
           transitionProperty: "transform",

@@ -136,6 +136,7 @@ export default class App extends Component {
           textOffset={5}
           normalOpacity={1}
           notHighlightedOpacity={0.75}
+          defaultHighlight={true}
           transition="1s"
         />
       </div>
@@ -165,6 +166,7 @@ Optional props
 - `textOffset` {Number} defaults to `5`
 - `normalOpacity` {Number | String} defaults to `1`
 - `notHighlightedOpacity` {Number | String} defaults to `0.75`
+- `defaultHighlight` {Boolean} defaults to `true`, whether to highlight all the cells when the user is not mousing over the matrix
 - `transition` {String} defaults to `1s`
 
 ## Acknowledgments

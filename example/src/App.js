@@ -120,6 +120,7 @@ export default class App extends Component {
           textOffset={5}
           normalOpacity={1}
           notHighlightedOpacity={0.75}
+          defaultHighlight={true}
           transition="1s"
         />
       </div>

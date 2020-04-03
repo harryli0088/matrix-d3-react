@@ -134,8 +134,8 @@ export default class App extends Component {
           gridLinesColor="gray"
           minRectSize={20}
           textOffset={5}
-          highlightOpacity={1}
-          normalOpacity={0.75}
+          normalOpacity={1}
+          notHighlightedOpacity={0.75}
           transition="1s"
         />
       </div>
@@ -163,8 +163,8 @@ Optional props
 - `gridLinesColor` {String} defaults to `gray`
 - `minRectSize` {Number} defaults to `20`
 - `textOffset` {Number} defaults to `5`
-- `highlightOpacity` {Number | String} defaults to `1`
-- `normalOpacity` {Number | String} defaults to `0.75`
+- `normalOpacity` {Number | String} defaults to `1`
+- `notHighlightedOpacity` {Number | String} defaults to `0.75`
 - `transition` {String} defaults to `1s`
 
 ## Acknowledgments

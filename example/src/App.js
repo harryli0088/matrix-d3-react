@@ -118,8 +118,8 @@ export default class App extends Component {
           gridLinesColor="gray"
           minRectSize={20}
           textOffset={5}
-          highlightOpacity={1}
-          normalOpacity={0.75}
+          normalOpacity={1}
+          notHighlightedOpacity={0.75}
           transition="1s"
         />
       </div>

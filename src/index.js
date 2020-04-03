@@ -26,11 +26,11 @@ export default class Matrix extends Component {
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
     minRectSize: PropTypes.number,
     textOffset: PropTypes.number,
-    highlightOpacity: PropTypes.oneOfType([
+    normalOpacity: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
     ]),
-    normalOpacity: PropTypes.oneOfType([
+    notHighlightedOpacity: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
     ]),
@@ -48,8 +48,8 @@ export default class Matrix extends Component {
     gridLinesColor: "gray",
     minRectSize: 20,
     textOffset: 5,
-    highlightOpacity: 1,
-    normalOpacity: 0.75,
+    normalOpacity: 1,
+    notHighlightedOpacity: 0.75,
     transition: "1s",
   }
 
@@ -123,8 +123,8 @@ export default class Matrix extends Component {
       gridLinesColor,
       minRectSize,
       textOffset,
-      highlightOpacity,
       normalOpacity,
+      notHighlightedOpacity,
       transition,
     } = this.props
 
@@ -162,11 +162,12 @@ export default class Matrix extends Component {
                 textOffset={textOffset}
                 font={font}
                 formatColHeading={formatColHeading}
-                highlightOpacity={highlightOpacity}
                 normalOpacity={normalOpacity}
+                notHighlightedOpacity={notHighlightedOpacity}
                 transition={transition}
 
                 mouseover={this.mouseover}
+                mouseoverRowIndex={this.state.mouseoverRowIndex}
                 mouseoverColIndex={this.state.mouseoverColIndex}
                 onClickHandler={onClickHandler}
               />
@@ -194,8 +195,8 @@ export default class Matrix extends Component {
                   formatRowHeading={formatRowHeading}
                   gridLinesColor={gridLinesColor}
                   textOffset={textOffset}
-                  highlightOpacity={highlightOpacity}
                   normalOpacity={normalOpacity}
+                  notHighlightedOpacity={notHighlightedOpacity}
                   transition={transition}
 
                   mouseover={this.mouseover}
@@ -235,8 +236,8 @@ class Row extends Component {
     return (
       <g
         style={{
-          opacity: (this.props.index===this.props.mouseoverRowIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
-          fontWeight: (this.props.index===this.props.mouseoverRowIndex) ? "bold" : "",
+          // opacity: (this.props.index===this.props.mouseoverRowIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
+          fontWeight: (this.props.index===this.props.mouseoverRowIndex) ? "bold" : "normal",
           font:this.props.font,
           transform: "translateY(" + this.props.yScale(this.props.index) + "px)",
           transition: this.props.transition,
@@ -256,7 +257,7 @@ class Row extends Component {
             onClick={e => this.props.onClickHandler(e, this.props.index, i)}
 
             style={{
-              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
+              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
               transition: this.props.transition,
               transitionProperty: "x",
             }}
@@ -306,8 +307,8 @@ class ColHeading extends Component {
         onClick={e => this.props.onClickHandler(e, -1, this.props.index)}
 
         style={{
-          opacity: (this.props.index===this.props.mouseoverColIndex) ? this.props.highlightOpacity : this.props.normalOpacity,
-          fontWeight: (this.props.index===this.props.mouseoverColIndex) ? "bold" : "",
+          opacity: (this.props.index===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
+          fontWeight: (this.props.index===this.props.mouseoverColIndex) ? "bold" : "normal",
           font: this.props.font,
           transform: "translateX(" + this.props.xScale(this.props.index) + "px) rotate(-90deg)",
           transition: this.props.transition,

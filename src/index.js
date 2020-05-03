@@ -16,16 +16,15 @@ export default class Matrix extends Component {
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
 
     //optional props
-    onMouseOverHandler: PropTypes.func,
-    onMouseOutHandler: PropTypes.func,
-    onClickHandler: PropTypes.func,
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
+    defaultHighlight: PropTypes.bool,
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
-    formatRowHeading: PropTypes.func,
     formatColHeading: PropTypes.func,
+    formatRowHeading: PropTypes.func,
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
+    linesHighlightedWidth: PropTypes.number,
+    linesNotHighlightedWidth: PropTypes.number,
     minRectSize: PropTypes.number,
-    textOffset: PropTypes.number,
     normalOpacity: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number
@@ -34,24 +33,29 @@ export default class Matrix extends Component {
       PropTypes.string,
       PropTypes.number
     ]),
-    defaultHighlight: PropTypes.bool,
+    onClickHandler: PropTypes.func,
+    onMouseOutHandler: PropTypes.func,
+    onMouseOverHandler: PropTypes.func,
+    textOffset: PropTypes.number,
     transition: PropTypes.string,
   }
 
   static defaultProps = {
-    onMouseOverHandler: function(e, rowIndex, colIndex) {},
-    onMouseOutHandler: function(e) {},
-    onClickHandler: function(e, rowIndex, colIndex) {},
     //no contentMaxHeight default,
-    font: "16px Arial",
-    formatRowHeading: function(text, count) { return text + (count>0 ? " ("+count+")" : "") },
-    formatColHeading: function(text, count) { return (count>0 ? "("+count+") " : "") + text },
-    gridLinesColor: "gray",
-    minRectSize: 20,
-    textOffset: 5,
-    normalOpacity: 1,
-    notHighlightedOpacity: 0.75,
     defaultHighlight: true,
+    font: "16px Arial",
+    formatColHeading: function(text, count) { return (count>0 ? "("+count+") " : "") + text },
+    formatRowHeading: function(text, count) { return text + (count>0 ? " ("+count+")" : "") },
+    gridLinesColor: "gray",
+    linesHighlightedWidth: 3,
+    linesNotHighlightedWidth: 1,
+    minRectSize: 20,
+    normalOpacity: 1,
+    notHighlightedOpacity: 0.25,
+    onClickHandler: function(e, rowIndex, colIndex) {},
+    onMouseOutHandler: function(e) {},
+    onMouseOverHandler: function(e, rowIndex, colIndex) {},
+    textOffset: 5,
     transition: "1s",
   }
 
@@ -115,18 +119,20 @@ export default class Matrix extends Component {
       orderBy,
       colorFunction,
 
-      //onMouseOverHandler not used here
-      //onMouseOutHandler not used here
-      onClickHandler,
       contentMaxHeight,
       font,
-      formatRowHeading,
       formatColHeading,
+      formatRowHeading,
       gridLinesColor,
+      linesHighlightedWidth,
+      linesNotHighlightedWidth,
       minRectSize,
-      textOffset,
       normalOpacity,
       notHighlightedOpacity,
+      onClickHandler,
+      //onMouseOutHandler not used here
+      //onMouseOverHandler not used here
+      textOffset,
       transition,
     } = this.props
 
@@ -157,21 +163,21 @@ export default class Matrix extends Component {
           <g transform={`translate(${horizontalTextSize}, ${verticalTextSize})`}>
             {columns.map((d, i) =>
               <ColHeading key={i}
-                index={i}
                 data={d}
-                xScale={x}
-                rectWidth={rectWidth}
-                textOffset={textOffset}
+                defaultHighlight={this.props.defaultHighlight}
                 font={font}
                 formatColHeading={formatColHeading}
+                index={i}
                 normalOpacity={normalOpacity}
                 notHighlightedOpacity={notHighlightedOpacity}
-                defaultHighlight={this.props.defaultHighlight}
+                rectWidth={rectWidth}
+                textOffset={textOffset}
                 transition={transition}
+                xScale={x}
 
                 mouseover={this.mouseover}
-                mouseoverRowIndex={this.state.mouseoverRowIndex}
                 mouseoverColIndex={this.state.mouseoverColIndex}
+                mouseoverRowIndex={this.state.mouseoverRowIndex}
                 onClickHandler={onClickHandler}
               />
             )}
@@ -184,40 +190,48 @@ export default class Matrix extends Component {
               {data.map((d, i) =>
                 <Row
                   key={i}
-                  index={i}
-                  heading={rows[i]}
+
                   data={d}
-                  columns={columns}
-                  xScale={x}
-                  yScale={y}
-                  rectWidth={rectWidth}
-                  rectHeight={rectHeight}
                   chartWidth={effectiveWidth}
                   colorFunction={colorFunction}
+                  columns={columns}
+                  defaultHighlight={this.props.defaultHighlight}
                   font={font}
                   formatRowHeading={formatRowHeading}
                   gridLinesColor={gridLinesColor}
-                  textOffset={textOffset}
+                  heading={rows[i]}
+                  index={i}
+                  linesHighlightedWidth={linesHighlightedWidth}
+                  linesNotHighlightedWidth={linesNotHighlightedWidth}
                   normalOpacity={normalOpacity}
                   notHighlightedOpacity={notHighlightedOpacity}
-                  defaultHighlight={this.props.defaultHighlight}
+                  rectHeight={rectHeight}
+                  rectWidth={rectWidth}
+                  textOffset={textOffset}
                   transition={transition}
+                  xScale={x}
+                  yScale={y}
+
 
                   mouseover={this.mouseover}
-                  onClickHandler={onClickHandler}
-                  mouseoverRowIndex={this.state.mouseoverRowIndex}
                   mouseoverColIndex={this.state.mouseoverColIndex}
+                  mouseoverRowIndex={this.state.mouseoverRowIndex}
+                  onClickHandler={onClickHandler}
                 />
               )}
 
               {this.props.columns.map((d, i) =>
                 <ColGrid key={i}
-                  index={i}
-                  data={d}
-                  xScale={x}
-                  rectWidth={rectWidth}
                   chartHeight={height}
+                  data={d}
+                  index={i}
                   gridLinesColor={gridLinesColor}
+                  linesHighlightedWidth={linesHighlightedWidth}
+                  linesNotHighlightedWidth={linesNotHighlightedWidth}
+                  rectWidth={rectWidth}
+                  xScale={x}
+
+                  mouseoverColIndex={this.state.mouseoverColIndex}
                 />
               )}
             </g>
@@ -236,6 +250,8 @@ class Row extends Component {
 
   render() {
     const fullName = this.props.heading.name + (this.props.heading.count!=undefined ? " ("+this.props.heading.count+")" : "");
+    const rowIsFullOpacity = this.props.index===this.props.mouseoverRowIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)
+    const rowIsHightlighted = this.props.index===this.props.mouseoverRowIndex
 
     return (
       <g
@@ -259,7 +275,7 @@ class Row extends Component {
             onClick={e => this.props.onClickHandler(e, this.props.index, i)}
 
             style={{
-              opacity:(this.props.index===this.props.mouseoverRowIndex || i===this.props.mouseoverColIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
+              opacity:(rowIsFullOpacity || i===this.props.mouseoverColIndex) ? this.props.normalOpacity : this.props.notHighlightedOpacity,
               transition: this.props.transition,
               transitionProperty: "x",
             }}
@@ -269,8 +285,8 @@ class Row extends Component {
         )}
 
 
-        <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor}></line>
-        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor}></line>
+        <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor} strokeWidth={rowIsHightlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
+        <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor} strokeWidth={rowIsHightlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
 
         <text
           x={-1*this.props.textOffset}
@@ -280,6 +296,7 @@ class Row extends Component {
 
           onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
           onClick={e => this.props.onClickHandler(e, this.props.index, -1)}
+          opacity={rowIsFullOpacity ? this.props.normalOpacity : this.props.notHighlightedOpacity}
         >
           <title>{fullName}</title>
           {this.props.formatRowHeading(this.props.heading.name, this.props.heading.count)}
@@ -291,10 +308,12 @@ class Row extends Component {
 
 class ColGrid extends Component {
   render() {
+    const colIsHighlighted = this.props.index === this.props.mouseoverColIndex
+
     return (
       <g transform={"translate(" + this.props.xScale(this.props.index) + ") rotate(-90)"}>
-        <line x1={-1*this.props.chartHeight} stroke={this.props.gridLinesColor}></line>
-        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth} stroke={this.props.gridLinesColor}></line>
+        <line x1={-1*this.props.chartHeight} stroke={this.props.gridLinesColor} strokeWidth={colIsHighlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
+        <line x1={-1*this.props.chartHeight} y1={this.props.rectWidth} y2={this.props.rectWidth} stroke={this.props.gridLinesColor} strokeWidth={colIsHighlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
       </g>
     );
   }

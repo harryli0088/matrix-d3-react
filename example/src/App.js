@@ -104,23 +104,25 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
-          onMouseOutHandler={function(e) {}}
-          onClickHandler={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
+          defaultHighlight={true}
           font={"16px Arial"}
-          formatRowHeading={function(text, count) {
-            return text + (count>0 ? " ("+count+")" : "")
-          }}
           formatColHeading={function(text, count) {
             return (count>0 ? "("+count+") " : "") + text
           }}
+          formatRowHeading={function(text, count) {
+            return text + (count>0 ? " ("+count+")" : "")
+          }}
           gridLinesColor="gray"
+          linesHighlightedWidth={3}
+          linesNotHighlightedWidth={1}
           minRectSize={20}
-          textOffset={5}
           normalOpacity={1}
-          notHighlightedOpacity={0.75}
-          defaultHighlight={true}
+          notHighlightedOpacity={0.25}
+          onClickHandler={function(e, rowIndex, colIndex) {}}
+          onMouseOutHandler={function(e) {}}
+          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
+          textOffset={5}
           transition="1s"
         />
       </div>

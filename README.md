@@ -120,23 +120,25 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
-          onMouseOutHandler={function(e) {}}
-          onClickHandler={function(e, rowIndex, colIndex) {}}
           contentMaxHeight={1000}
+          defaultHighlight={true}
           font={"16px Arial"}
-          formatRowHeading={function(text, count) {
-            return text + (count>0 ? " ("+count+")" : "")
-          }}
           formatColHeading={function(text, count) {
             return (count>0 ? "("+count+") " : "") + text
           }}
+          formatRowHeading={function(text, count) {
+            return text + (count>0 ? " ("+count+")" : "")
+          }}
           gridLinesColor="gray"
+          linesHighlightedWidth={3}
+          linesNotHighlightedWidth={3}
           minRectSize={20}
-          textOffset={5}
           normalOpacity={1}
-          notHighlightedOpacity={0.75}
-          defaultHighlight={true}
+          notHighlightedOpacity={0.25}
+          onClickHandler={function(e, rowIndex, colIndex) {}}
+          onMouseOutHandler={function(e) {}}
+          onMouseOverHandler={function(e, rowIndex, colIndex) {}}
+          textOffset={5}
           transition="1s"
         />
       </div>
@@ -154,19 +156,21 @@ export default class App extends Component {
 - `orderBy` {String} Required
 
 Optional props
-- `onMouseOverHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
-- `onMouseOutHandler` {Function} defaults to `function(e) {}`
-- `onClickHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
 - `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
+- `defaultHighlight` {Boolean} defaults to `true`, whether to highlight all the cells when the user is not mousing over the matrix
 - `font` {String} defaults to `16px Arial`
-- `formatRowHeading` {Function} defaults to `function(text, count) { return text + (count>0 ? " ("+count+")" : "") }`
 - `formatColHeading` {Function} defaults to `function(text, count) { return (count>0 ? "("+count+") " : "") + text }`
+- `formatRowHeading` {Function} defaults to `function(text, count) { return text + (count>0 ? " ("+count+")" : "") }`
 - `gridLinesColor` {String} defaults to `gray`
+- `linesHighlightedWidth` {Number} defaults to `3`
+- `linesNotHighlightedWidth` {Number} defaults to `1`
 - `minRectSize` {Number} defaults to `20`
-- `textOffset` {Number} defaults to `5`
 - `normalOpacity` {Number | String} defaults to `1`
 - `notHighlightedOpacity` {Number | String} defaults to `0.75`
-- `defaultHighlight` {Boolean} defaults to `true`, whether to highlight all the cells when the user is not mousing over the matrix
+- `onClickHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `onMouseOutHandler` {Function} defaults to `function(e) {}`
+- `onMouseOverHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
+- `textOffset` {Number} defaults to `5`
 - `transition` {String} defaults to `1s`
 
 ## Acknowledgments

@@ -108,10 +108,10 @@ export default class App extends Component {
           defaultHighlight={true}
           font={"16px Arial"}
           formatColHeading={function(text, count) {
-            return (count>0 ? "("+count+") " : "") + text
+            return [text, (count>0 ? "("+count+")" : "")]
           }}
           formatRowHeading={function(text, count) {
-            return text + (count>0 ? " ("+count+")" : "")
+            return [text, (count>0 ? "("+count+")" : "")]
           }}
           gridLinesColor="gray"
           linesHighlightedWidth={3}

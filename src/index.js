@@ -44,8 +44,8 @@ export default class Matrix extends Component {
     //no contentMaxHeight default,
     defaultHighlight: true,
     font: "16px Arial",
-    formatColHeading: function(text, count) { return (count>0 ? "("+count+") " : "") + text },
-    formatRowHeading: function(text, count) { return text + (count>0 ? " ("+count+")" : "") },
+    formatColHeading: function(text, count) { return [text, (count>0 ? "("+count+")" : "")] },
+    formatRowHeading: function(text, count) { return [text, (count>0 ? "("+count+")" : "")] },
     gridLinesColor: "gray",
     linesHighlightedWidth: 3,
     linesNotHighlightedWidth: 1,
@@ -173,6 +173,7 @@ export default class Matrix extends Component {
                 rectWidth={rectWidth}
                 textOffset={textOffset}
                 transition={transition}
+                verticalTextSize={verticalTextSize}
                 xScale={x}
 
                 mouseover={this.mouseover}
@@ -200,6 +201,7 @@ export default class Matrix extends Component {
                   formatRowHeading={formatRowHeading}
                   gridLinesColor={gridLinesColor}
                   heading={rows[i]}
+                  horizontalTextSize={horizontalTextSize}
                   index={i}
                   linesHighlightedWidth={linesHighlightedWidth}
                   linesNotHighlightedWidth={linesNotHighlightedWidth}
@@ -249,7 +251,8 @@ class Row extends Component {
   }
 
   render() {
-    const fullName = this.props.heading.name + (this.props.heading.count!=undefined ? " ("+this.props.heading.count+")" : "");
+    const formattedHeading = this.props.formatRowHeading(this.props.heading.name, this.props.heading.count)
+    const fullName = formattedHeading[0] + " " + formattedHeading[1]
     const rowIsFullOpacity = this.props.index===this.props.mouseoverRowIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)
     const rowIsHightlighted = this.props.index===this.props.mouseoverRowIndex
 
@@ -288,19 +291,32 @@ class Row extends Component {
         <line x2={this.props.chartWidth} stroke={this.props.gridLinesColor} strokeWidth={rowIsHightlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
         <line x2={this.props.chartWidth} y1={this.props.rectHeight} y2={this.props.rectHeight} stroke={this.props.gridLinesColor} strokeWidth={rowIsHightlighted ? this.props.linesHighlightedWidth : this.props.linesNotHighlightedWidth}></line>
 
-        <text
-          x={-1*this.props.textOffset}
-          y={this.props.rectHeight}
-          dy="-0.35em"
-          textAnchor="end"
-
+        <g
           onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
           onClick={e => this.props.onClickHandler(e, this.props.index, -1)}
           opacity={rowIsFullOpacity ? this.props.normalOpacity : this.props.notHighlightedOpacity}
+          transform={"translate(-"+(this.props.textOffset)+","+(this.props.rectHeight)+")"}
         >
-          <title>{fullName}</title>
-          {this.props.formatRowHeading(this.props.heading.name, this.props.heading.count)}
-        </text>
+          <text
+            x={10 - this.props.horizontalTextSize}
+            y={0}
+            dy="-0.35em"
+            textAnchor="start"
+          >
+            <title>{fullName}</title>
+            {formattedHeading[0]}
+          </text>
+
+          <text
+            x={0}
+            y={0}
+            dy="-0.35em"
+            textAnchor="end"
+          >
+            <title>{fullName}</title>
+            {formattedHeading[1]}
+          </text>
+        </g>
       </g>
     );
   }
@@ -321,7 +337,8 @@ class ColGrid extends Component {
 
 class ColHeading extends Component {
   render() {
-    const fullName = (this.props.data.count!=undefined ? "("+this.props.data.count+") " : "") + this.props.data.name;
+    const formattedHeading = this.props.formatColHeading(this.props.data.name, this.props.data.count)
+    const fullName = formattedHeading[0] + " " + formattedHeading[1]
     return (
       <g
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}
@@ -337,7 +354,12 @@ class ColHeading extends Component {
       >
         <text x={this.props.textOffset} y={this.props.rectWidth/2} dy="0.32em" textAnchor="start">
           <title>{fullName}</title>
-          {this.props.formatColHeading(this.props.data.name, this.props.data.count)}
+          {formattedHeading[0]}
+        </text>
+
+        <text x={this.props.textOffset + this.props.verticalTextSize - 10} y={this.props.rectWidth/2} dy="0.32em" textAnchor="end">
+          <title>{fullName}</title>
+          {formattedHeading[1]}
         </text>
       </g>
     );

@@ -123,12 +123,8 @@ export default class App extends Component {
           contentMaxHeight={1000}
           defaultHighlight={true}
           font={"16px Arial"}
-          formatColHeading={function(text, count) {
-            return (count>0 ? "("+count+") " : "") + text
-          }}
-          formatRowHeading={function(text, count) {
-            return text + (count>0 ? " ("+count+")" : "")
-          }}
+          formatColHeading={function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }}
+          formatRowHeading={function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }}
           gridLinesColor="gray"
           linesHighlightedWidth={3}
           linesNotHighlightedWidth={3}
@@ -159,8 +155,8 @@ Optional props
 - `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
 - `defaultHighlight` {Boolean} defaults to `true`, whether to highlight all the cells when the user is not mousing over the matrix
 - `font` {String} defaults to `16px Arial`
-- `formatColHeading` {Function} defaults to `function(text, count) { return (count>0 ? "("+count+") " : "") + text }`
-- `formatRowHeading` {Function} defaults to `function(text, count) { return text + (count>0 ? " ("+count+")" : "") }`
+- `formatColHeading` {Function} defaults to `function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }`
+- `formatRowHeading` {Function} defaults to `function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }`
 - `gridLinesColor` {String} defaults to `gray`
 - `linesHighlightedWidth` {Number} defaults to `3`
 - `linesNotHighlightedWidth` {Number} defaults to `1`

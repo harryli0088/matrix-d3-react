@@ -1,6 +1,6 @@
 {
   "name": "matrix-d3-react",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "matrix viz using d3 and react",
   "author": "harryli0088",
   "license": "MIT",

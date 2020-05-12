@@ -18,7 +18,7 @@ export default class Matrix extends Component {
     //optional props
     contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     defaultHighlight: PropTypes.bool,
-    font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "bold 16px Arial"
+    font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "16px Arial"
     formatColHeading: PropTypes.func,
     formatRowHeading: PropTypes.func,
     gridLinesColor: PropTypes.string, //optional string for the color of the grid lines
@@ -70,6 +70,7 @@ export default class Matrix extends Component {
     };
 
     this.matrix = React.createRef();
+    this.ctx = document.createElement('canvas').getContext("2d");
   }
 
   componentDidMount() {
@@ -136,12 +137,11 @@ export default class Matrix extends Component {
       transition,
     } = this.props
 
-    let context = document.createElement('canvas').getContext("2d");
-    context.font = font;
+    this.ctx.font = font;
 
     //get text label lengths
-    const horizontalTextSize = getTextSize(context, rows, formatRowHeading, textOffset);
-    const verticalTextSize = getTextSize(context, columns, formatColHeading, textOffset);
+    const horizontalTextSize = getTextSize(this.ctx, rows, formatRowHeading, textOffset);
+    const verticalTextSize = getTextSize(this.ctx, columns, formatColHeading, textOffset);
 
     //effective width of the matric minus horitzontal text and scrollbar
     const minWidth = horizontalTextSize + columns.length*minRectSize + (contentMaxHeight?SCROLLBAR_SIZE:0);
@@ -368,14 +368,14 @@ class ColHeading extends Component {
 
 
 //given a canvas context and some text, return the longest length in pixels
-function getTextSize(context, headings, formatText, textOffset) {
+function getTextSize(ctx, headings, formatText, textOffset) {
   let longestLength = 0;
   for(let i=0; i<headings.length; ++i) {
-    const length = context.measureText(formatText(headings[i].name, headings[i].count)).width;
+    const length = ctx.measureText(formatText(headings[i].name, headings[i].count).join(" ")).width;
     if(length > longestLength) {
       longestLength = length;
     }
   }
 
-  return longestLength + textOffset + 20;
+  return longestLength + textOffset + 5;
 }

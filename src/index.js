@@ -377,5 +377,5 @@ function getTextSize(ctx, headings, formatText, textOffset) {
     }
   }
 
-  return longestLength + textOffset + 5;
+  return longestLength + textOffset;
 }

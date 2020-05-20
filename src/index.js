@@ -252,7 +252,7 @@ class Row extends Component {
 
   render() {
     const formattedHeading = this.props.formatRowHeading(this.props.heading.name, this.props.heading.count)
-    const fullName = formattedHeading[0] + " " + formattedHeading[1]
+    const fullName = this.props.heading.name + " " + formattedHeading[1]
     const rowIsFullOpacity = this.props.index===this.props.mouseoverRowIndex || (this.props.mouseoverRowIndex===-1&&this.props.mouseoverColIndex===-1&&this.props.defaultHighlight)
     const rowIsHightlighted = this.props.index===this.props.mouseoverRowIndex
 
@@ -338,7 +338,7 @@ class ColGrid extends Component {
 class ColHeading extends Component {
   render() {
     const formattedHeading = this.props.formatColHeading(this.props.data.name, this.props.data.count)
-    const fullName = formattedHeading[0] + " " + formattedHeading[1]
+    const fullName = this.props.data.name + " " + formattedHeading[1]
     return (
       <g
         onMouseOver={e => this.props.mouseover(e, -1, this.props.index)}

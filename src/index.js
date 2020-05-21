@@ -16,7 +16,7 @@ export default class Matrix extends Component {
     colorFunction: PropTypes.func.isRequired, //function(value) { return color;}
 
     //optional props
-    contentMaxHeight: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
+    height: PropTypes.number, //optional number of the maximum number of pixels that the content takes up before scrolling
     defaultHighlight: PropTypes.bool,
     font: PropTypes.string, //optional string to do text pixel size calculations, defaults to "16px Arial"
     formatColHeading: PropTypes.func,
@@ -41,7 +41,7 @@ export default class Matrix extends Component {
   }
 
   static defaultProps = {
-    //no contentMaxHeight default,
+    height: 500,
     defaultHighlight: true,
     font: "16px Arial",
     formatColHeading: function(text, count) { return [text, (count>0 ? "("+count+")" : "")] },
@@ -120,7 +120,7 @@ export default class Matrix extends Component {
       orderBy,
       colorFunction,
 
-      contentMaxHeight,
+      height,
       font,
       formatColHeading,
       formatRowHeading,
@@ -143,15 +143,18 @@ export default class Matrix extends Component {
     const horizontalTextSize = getTextSize(this.ctx, rows, formatRowHeading, textOffset);
     const verticalTextSize = getTextSize(this.ctx, columns, formatColHeading, textOffset);
 
-    //effective width of the matric minus horitzontal text and scrollbar
-    const minWidth = horizontalTextSize + columns.length*minRectSize + (contentMaxHeight?SCROLLBAR_SIZE:0);
-    const width = Math.max(minWidth, this.state.width);
-    const effectiveWidth = width - horizontalTextSize - (contentMaxHeight?SCROLLBAR_SIZE:0);
-    const height = data.length*minRectSize;
+    const minHeight = verticalTextSize + rows.length*minRectSize;
+    const effectiveHeight = Math.max(minHeight, height);
+    const gridHeight = effectiveHeight - verticalTextSize - 10;
+    const tooTall = minHeight > height
+    const minWidth = horizontalTextSize + columns.length*minRectSize + (tooTall?SCROLLBAR_SIZE:0);
+    const effectiveWidth = Math.max(minWidth, this.state.width);
+    const gridWidth = effectiveWidth - horizontalTextSize - (tooTall?SCROLLBAR_SIZE:0);
+
 
     //in svg, y is rows and x is columns
-    const x = d3.scaleBand().range([0, effectiveWidth]).domain(orders.columns[orderBy]);
-    const y = d3.scaleBand().range([0, height]).domain(orders.rows[orderBy]);
+    const x = d3.scaleBand().range([0, gridWidth]).domain(orders.columns[orderBy]);
+    const y = d3.scaleBand().range([0, gridHeight]).domain(orders.rows[orderBy]);
 
     const rectWidth = x.bandwidth();
     const rectHeight = y.bandwidth();
@@ -159,7 +162,7 @@ export default class Matrix extends Component {
 
     return (
       <div className="matrix" ref={this.matrix} onMouseLeave={this.mouseout} style={{font: this.props.font}}>
-        <svg width={width} height={verticalTextSize}>
+        <svg width={effectiveWidth} height={verticalTextSize}>
           <g transform={`translate(${horizontalTextSize}, ${verticalTextSize})`}>
             {columns.map((d, i) =>
               <ColHeading key={i}
@@ -185,15 +188,15 @@ export default class Matrix extends Component {
           </g>
         </svg>
 
-        <div style={contentMaxHeight<height ? {"maxHeight":contentMaxHeight,"overflowY":"auto","width":width+SCROLLBAR_SIZE} : {}}>
-          <svg width={width} height={height}>
+        <div style={height<effectiveHeight ? {"maxHeight":height,"overflowY":"auto","width":effectiveWidth} : {}}>
+          <svg width={effectiveWidth - (tooTall?SCROLLBAR_SIZE:0)} height={gridHeight}>
             <g transform={`translate(${horizontalTextSize})`}>
               {data.map((d, i) =>
                 <Row
                   key={i}
 
                   data={d}
-                  chartWidth={effectiveWidth}
+                  chartWidth={gridWidth}
                   colorFunction={colorFunction}
                   columns={columns}
                   defaultHighlight={this.props.defaultHighlight}
@@ -224,7 +227,7 @@ export default class Matrix extends Component {
 
               {this.props.columns.map((d, i) =>
                 <ColGrid key={i}
-                  chartHeight={height}
+                  chartHeight={gridHeight}
                   data={d}
                   index={i}
                   gridLinesColor={gridLinesColor}
@@ -295,12 +298,12 @@ class Row extends Component {
           onMouseOver={e => this.props.mouseover(e, this.props.index, -1)}
           onClick={e => this.props.onClickHandler(e, this.props.index, -1)}
           opacity={rowIsFullOpacity ? this.props.normalOpacity : this.props.notHighlightedOpacity}
-          transform={"translate(-"+(this.props.textOffset)+","+(this.props.rectHeight)+")"}
+          transform={"translate(-"+(this.props.textOffset)+","+(this.props.rectHeight/2)+")"}
         >
           <text
             x={10 - this.props.horizontalTextSize}
             y={0}
-            dy="-0.35em"
+            dy="0.35em"
             textAnchor="start"
           >
             <title>{fullName}</title>
@@ -310,7 +313,7 @@ class Row extends Component {
           <text
             x={0}
             y={0}
-            dy="-0.35em"
+            dy="0.35em"
             textAnchor="end"
           >
             <title>{fullName}</title>

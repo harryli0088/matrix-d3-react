@@ -120,7 +120,7 @@ export default class App extends Component {
           orderBy={this.state.orderBy}
 
           //optional props with their defaults shown
-          contentMaxHeight={1000}
+          height={500}
           defaultHighlight={true}
           font={"16px Arial"}
           formatColHeading={function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }}
@@ -152,7 +152,7 @@ export default class App extends Component {
 - `orderBy` {String} Required
 
 Optional props
-- `contentMaxHeight` {Number} the pixel height of the matrix before scrollbars kick in, defaults to `1000`
+- `height` {Number} the pixel height of the matrix visualization, defaults to `500`
 - `defaultHighlight` {Boolean} defaults to `true`, whether to highlight all the cells when the user is not mousing over the matrix
 - `font` {String} defaults to `16px Arial`
 - `formatColHeading` {Function} defaults to `function(text, count) { return [text, (count>0 ? "("+count+")" : "")] }`
@@ -160,7 +160,7 @@ Optional props
 - `gridLinesColor` {String} defaults to `gray`
 - `linesHighlightedWidth` {Number} defaults to `3`
 - `linesNotHighlightedWidth` {Number} defaults to `1`
-- `minRectSize` {Number} defaults to `20`
+- `minRectSize` {Number} defaults to `20`, if the width or your height prop are too small, scrollbars will kick in
 - `normalOpacity` {Number | String} defaults to `1`
 - `notHighlightedOpacity` {Number | String} defaults to `0.75`
 - `onClickHandler` {Function} defaults to `function(e, rowIndex, colIndex) {}`
